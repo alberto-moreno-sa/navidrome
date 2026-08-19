@@ -110,13 +110,13 @@ const PlayerBar = ({ onToggleQueue }) => {
   const khz = song.sampleRate ? `${Math.round((song.sampleRate / 1000) * 10) / 10} kHz` : null
   const bits = song.bitDepth ? `${song.bitDepth} bit` : null
   const kbps = song.bitRate ? `${song.bitRate} kbps` : null
-  const channels = song.channels === 1 ? 'Mono' : song.channels === 2 ? 'Estéreo' : song.channels ? `${song.channels} canales` : null
+  const channels = song.channels === 1 ? 'Mono' : song.channels === 2 ? 'Stereo' : song.channels ? `${song.channels} channels` : null
   const qualityLabel = [bits, khz].filter(Boolean).join(' · ') || codec || null
 
   return (
     <>
       <footer className="nd-playerbar" ref={menuRef}>
-        <div className="nd-pbar" onClick={seek} role="slider" aria-label="Progreso" tabIndex={-1}>
+        <div className="nd-pbar" onClick={seek} role="slider" aria-label="Progress" tabIndex={-1}>
           <div className="nd-pbuf" />
           <div className="nd-pfill" style={{ width: `${pct}%` }} />
         </div>
@@ -125,7 +125,7 @@ const PlayerBar = ({ onToggleQueue }) => {
             <button
               className="nd-pcover"
               onClick={() => setExpanded(true)}
-              aria-label="Abrir reproductor"
+              aria-label="Open player"
               type="button"
               style={{ padding: 0, cursor: 'pointer', border: 0 }}
             >
@@ -148,21 +148,21 @@ const PlayerBar = ({ onToggleQueue }) => {
           <div className="nd-ptransport">
             <button
               className={shuffleOn ? 'on' : ''}
-              aria-label="Aleatorio"
+              aria-label="Shuffle"
               aria-pressed={shuffleOn}
               onClick={toggleShuffle}
               type="button"
             >
               <Icon name="shuffle" size={20} />
             </button>
-            <button aria-label="Anterior" onClick={call('playPrev')} type="button"><Icon name="prev" size={20} /></button>
-            <button className="main" aria-label={tick.paused ? 'Reproducir' : 'Pausar'} onClick={call('togglePlay')} type="button">
+            <button aria-label="Previous" onClick={call('playPrev')} type="button"><Icon name="prev" size={20} /></button>
+            <button className="main" aria-label={tick.paused ? 'Play' : 'Pause'} onClick={call('togglePlay')} type="button">
               <Icon name={tick.paused ? 'play' : 'pause'} size={26} />
             </button>
-            <button aria-label="Siguiente" onClick={call('playNext')} type="button"><Icon name="next" size={20} /></button>
+            <button aria-label="Next" onClick={call('playNext')} type="button"><Icon name="next" size={20} /></button>
             <button
               className={repeatState !== 'off' ? 'on' : ''}
-              aria-label={repeatState === 'one' ? 'Repetir una' : repeatState === 'all' ? 'Repetir todo' : 'Repetir'}
+              aria-label={repeatState === 'one' ? 'Repeat one' : repeatState === 'all' ? 'Repeat all' : 'Repeat'}
               aria-pressed={repeatState !== 'off'}
               onClick={cycleRepeat}
               type="button"
@@ -173,10 +173,10 @@ const PlayerBar = ({ onToggleQueue }) => {
 
           <div className="nd-pright">
             <div className="nd-pvol">
-              <button className="nd-pvolbtn" aria-label={tick.muted ? 'Activar sonido' : 'Silenciar'} aria-pressed={tick.muted} onClick={toggleMute} type="button">
+              <button className="nd-pvolbtn" aria-label={tick.muted ? 'Unmute' : 'Mute'} aria-pressed={tick.muted} onClick={toggleMute} type="button">
                 <Icon name={tick.muted || volPct === 0 ? 'volumeOff' : 'volume'} size={18} />
               </button>
-              <div className="nd-voltrack" onClick={setVol} role="slider" aria-label="Volumen" tabIndex={-1}>
+              <div className="nd-voltrack" onClick={setVol} role="slider" aria-label="Volume" tabIndex={-1}>
                 <div className="nd-volfill" style={{ width: `${volPct}%` }} />
               </div>
             </div>
@@ -188,22 +188,22 @@ const PlayerBar = ({ onToggleQueue }) => {
                   onClick={() => setMenu(menu === 'quality' ? null : 'quality')}
                   aria-haspopup="menu"
                   aria-expanded={menu === 'quality'}
-                  aria-label="Calidad de audio"
+                  aria-label="Audio quality"
                   type="button"
                 >
                   <span className="nd-res">{qualityLabel}</span>
                 </button>
                 {menu === 'quality' ? (
                   <div className="nd-ppop" role="menu">
-                    <div className="nd-ppop-title">Calidad de audio</div>
+                    <div className="nd-ppop-title">Audio quality</div>
                     <dl className="nd-ppop-kv">
-                      {codec ? (<><dt>Formato</dt><dd>{codec}</dd></>) : null}
-                      {kbps ? (<><dt>Tasa de bits</dt><dd>{kbps}</dd></>) : null}
-                      {khz ? (<><dt>Frecuencia</dt><dd>{khz}</dd></>) : null}
-                      {bits ? (<><dt>Profundidad</dt><dd>{bits}</dd></>) : null}
-                      {channels ? (<><dt>Canales</dt><dd>{channels}</dd></>) : null}
+                      {codec ? (<><dt>Format</dt><dd>{codec}</dd></>) : null}
+                      {kbps ? (<><dt>Bit rate</dt><dd>{kbps}</dd></>) : null}
+                      {khz ? (<><dt>Sample rate</dt><dd>{khz}</dd></>) : null}
+                      {bits ? (<><dt>Bit depth</dt><dd>{bits}</dd></>) : null}
+                      {channels ? (<><dt>Channels</dt><dd>{channels}</dd></>) : null}
                     </dl>
-                    <div className="nd-ppop-note">Reproduciendo desde el origen, sin transcodificar.</div>
+                    <div className="nd-ppop-note">Playing from source, no transcoding.</div>
                   </div>
                 ) : null}
               </div>
@@ -218,17 +218,17 @@ const PlayerBar = ({ onToggleQueue }) => {
                 type="button"
               >
                 <Icon name="output" size={18} />
-                Salida predeterminada
+                Default output
               </button>
               {menu === 'output' ? (
                 <div className="nd-ppop" role="menu">
-                  <div className="nd-ppop-title">Salida de audio</div>
+                  <div className="nd-ppop-title">Audio output</div>
                   <button className="nd-ppop-item on" role="menuitemradio" aria-checked="true" type="button">
                     <Icon name="output" size={18} />
-                    <span>Salida predeterminada del sistema</span>
+                    <span>System default output</span>
                     <Icon name="check" size={16} />
                   </button>
-                  <div className="nd-ppop-note">El navegador reproduce en el dispositivo de salida del sistema.</div>
+                  <div className="nd-ppop-note">The browser plays through the system's output device.</div>
                 </div>
               ) : null}
             </div>
@@ -236,7 +236,7 @@ const PlayerBar = ({ onToggleQueue }) => {
             <div className="nd-pmenu-anchor">
               <button
                 className={`nd-circ${menu === 'kebab' ? ' on' : ''}`}
-                aria-label="Más opciones"
+                aria-label="More options"
                 aria-haspopup="menu"
                 aria-expanded={menu === 'kebab'}
                 onClick={() => setMenu(menu === 'kebab' ? null : 'kebab')}
@@ -248,21 +248,21 @@ const PlayerBar = ({ onToggleQueue }) => {
                 <div className="nd-ppop" role="menu">
                   <button className="nd-ppop-item" role="menuitem" type="button" onClick={() => goto(song.albumId ? `/album/${song.albumId}/show` : null)} disabled={!song.albumId}>
                     <Icon name="album" size={18} />
-                    <span>Ir al álbum</span>
+                    <span>Go to album</span>
                   </button>
                   <button className="nd-ppop-item" role="menuitem" type="button" onClick={() => goto(song.artistId ? `/artist/${song.artistId}/show` : null)} disabled={!song.artistId}>
                     <Icon name="artist" size={18} />
-                    <span>Ir al artista</span>
+                    <span>Go to artist</span>
                   </button>
                   <button className="nd-ppop-item" role="menuitem" type="button" onClick={() => { setMenu(null); setExpanded(true) }}>
                     <Icon name="info" size={18} />
-                    <span>Información</span>
+                    <span>Information</span>
                   </button>
                 </div>
               ) : null}
             </div>
 
-            <button className="nd-pqueue" aria-label="Cola de reproducción" onClick={onToggleQueue} type="button">
+            <button className="nd-pqueue" aria-label="Play queue" onClick={onToggleQueue} type="button">
               <Icon name="queue" size={18} />
               {queueLen > 0 ? <span className="nd-pcount">{queueLen}</span> : null}
             </button>

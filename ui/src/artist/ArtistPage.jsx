@@ -74,26 +74,26 @@ const ArtistPage = (props) => {
           {photo ? <img src={photo} alt="" /> : null}
         </div>
         <div className="nd-artist-info">
-          <div className="nd-artist-kicker">Artista</div>
+          <div className="nd-artist-kicker">Artist</div>
           <h1 className="nd-artist-name nd-trunc">{record.name}</h1>
           <div className="nd-artist-stats">
-            {(record.albumCount || 0)} álbumes · {(record.songCount || 0)} canciones
+            {(record.albumCount || 0)} albums · {(record.songCount || 0)} songs
           </div>
           {bio ? <p className="nd-artist-bio">{bio}</p> : null}
           <div className="nd-artist-actions">
             <button className="nd-btn" onClick={playTop} type="button" disabled={!top.length}>
-              <Icon name="play" size={18} /> Reproducir
+              <Icon name="play" size={18} /> Play
             </button>
-            <button className="nd-btn text" type="button">Radio del artista</button>
-            <NdLove resource="artist" record={record} size={18} label="Seguir" labelOn="Siguiendo" />
-            {!info ? <span className="agents">Cargando información externa…</span> : null}
+            <button className="nd-btn text" type="button">Artist radio</button>
+            <NdLove resource="artist" record={record} size={18} label="Follow" labelOn="Following" />
+            {!info ? <span className="agents">Loading external info…</span> : null}
           </div>
         </div>
       </div>
 
       {top.length ? (
         <section style={{ marginBottom: 40 }}>
-          <h2 className="nd-h2">Top canciones</h2>
+          <h2 className="nd-h2">Top songs</h2>
           {top.slice(0, 10).map((s, i) => (
             <button
               className="nd-topsong"
@@ -119,7 +119,7 @@ const ArtistPage = (props) => {
 
       {similar.length ? (
         <section>
-          <h2 className="nd-h2">Artistas similares</h2>
+          <h2 className="nd-h2">Similar artists</h2>
           <div className="nd-similars">
             {similar.slice(0, 12).map((a) => (
               <a className="nd-similar" href={`#/artist/${a.id}/show`} key={a.id}>

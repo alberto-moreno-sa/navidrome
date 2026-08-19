@@ -6,15 +6,15 @@ import Icon from './Icon'
 // turns white. When collapsed, labels and counts hide and each row keeps a
 // title tooltip for accessibility.
 const VIEWS = [
-  { key: 'all', label: 'Todo', icon: 'all' },
-  { key: 'albums', label: 'Álbumes', icon: 'album' },
-  { key: 'artists', label: 'Artistas', icon: 'artist' },
-  { key: 'songs', label: 'Canciones', icon: 'song' },
-  { key: 'playlists', label: 'Listas', icon: 'playlist' },
-  { key: 'genres', label: 'Géneros', icon: 'genre' },
+  { key: 'all', label: 'All', icon: 'all' },
+  { key: 'albums', label: 'Albums', icon: 'album' },
+  { key: 'artists', label: 'Artists', icon: 'artist' },
+  { key: 'songs', label: 'Songs', icon: 'song' },
+  { key: 'playlists', label: 'Playlists', icon: 'playlist' },
+  { key: 'genres', label: 'Genres', icon: 'genre' },
   { key: 'radios', label: 'Radios', icon: 'radio' },
-  { key: 'favorites', label: 'Favoritos', icon: 'heart' },
-  { key: 'shares', label: 'Compartidos', icon: 'share' },
+  { key: 'favorites', label: 'Favorites', icon: 'heart' },
+  { key: 'shares', label: 'Shared', icon: 'share' },
 ]
 
 const fmtCount = (n) => {
@@ -27,12 +27,12 @@ const fmtCount = (n) => {
 const LibrarySidebar = ({ view, onSelect, counts = {}, collapsed, onToggle }) => (
   <nav
     className={`nd-sidebar${collapsed ? ' collapsed' : ''}`}
-    aria-label="Biblioteca"
+    aria-label="Library"
   >
     <button
       className="nd-sidebar-toggle"
       onClick={onToggle}
-      aria-label={collapsed ? 'Expandir menú' : 'Contraer menú'}
+      aria-label={collapsed ? 'Expand menu' : 'Collapse menu'}
       aria-expanded={!collapsed}
       type="button"
     >

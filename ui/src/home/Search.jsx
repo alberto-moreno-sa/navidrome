@@ -22,7 +22,7 @@ const ArtistCard = ({ record }) => {
         {cover ? <img src={cover} alt="" loading="lazy" /> : null}
       </div>
       <div className="t nd-trunc">{record.name}</div>
-      <div className="s nd-trunc">Artista</div>
+      <div className="s nd-trunc">Artist</div>
     </Link>
   )
 }
@@ -48,9 +48,9 @@ const Search = () => {
   if (!q) {
     return (
       <div className="nd-page">
-        <h1 className="nd-h1">Búsqueda</h1>
+        <h1 className="nd-h1">Search</h1>
         <div className="nd-empty">
-          Escribe algo en la barra superior para buscar en tu biblioteca.
+          Type in the top bar to search your library.
         </div>
       </div>
     )
@@ -58,16 +58,16 @@ const Search = () => {
 
   return (
     <div className="nd-page">
-      <h1 className="nd-h1">Resultados</h1>
+      <h1 className="nd-h1">Results</h1>
       <div className="nd-sub" style={{ marginBottom: 24 }}>
-        {loading ? 'Buscando…' : `${total} coincidencias para «${q}»`}
+        {loading ? 'Searching…' : `${total} matches for "${q}"`}
       </div>
 
       {artistList.length ? (
         <section className="nd-sec">
           <div className="nd-sec-head">
             <div className="nd-sec-title">
-              <h2>Artistas</h2>
+              <h2>Artists</h2>
             </div>
           </div>
           <Rail variant="dense">
@@ -82,7 +82,7 @@ const Search = () => {
         <section className="nd-sec">
           <div className="nd-sec-head">
             <div className="nd-sec-title">
-              <h2>Álbumes</h2>
+              <h2>Albums</h2>
             </div>
           </div>
           <Rail variant="dense">
@@ -97,7 +97,7 @@ const Search = () => {
         <section className="nd-sec">
           <div className="nd-sec-head">
             <div className="nd-sec-title">
-              <h2>Canciones</h2>
+              <h2>Songs</h2>
             </div>
           </div>
           <div className="nd-list">
@@ -105,7 +105,7 @@ const Search = () => {
               <ListRow
                 key={r.id}
                 record={r}
-                type="Pista"
+                type="Track"
                 resource="song"
                 onPlay={() => playSong(r, songList)}
               />
@@ -117,7 +117,7 @@ const Search = () => {
       {!loading && total === 0 ? (
         <div className="nd-empty">
           <Icon name="searchOff" size={28} />
-          <div style={{ marginTop: 10 }}>Sin resultados para «{q}».</div>
+          <div style={{ marginTop: 10 }}>No results for "{q}".</div>
         </div>
       ) : null}
     </div>

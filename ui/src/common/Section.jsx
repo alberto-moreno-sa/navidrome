@@ -12,7 +12,7 @@ const Section = ({ title, subtitle, seeAllTo, chips, children }) => (
           <h2>{title}</h2>
           {seeAllTo ? (
             <Link className="nd-seeall" to={seeAllTo}>
-              Ver todo <Icon name="chevron" size={14} className="nd-icon" />
+              See all <Icon name="chevron" size={14} className="nd-icon" />
             </Link>
           ) : null}
         </div>

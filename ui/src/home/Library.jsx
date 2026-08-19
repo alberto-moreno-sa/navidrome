@@ -43,35 +43,35 @@ const linkFor = (resource, id) => {
 // native list API (the same ones Descubrir already relies on).
 const SORT_OPTIONS = {
   album: [
-    { value: 'name', label: 'Nombre', order: 'ASC' },
-    { value: 'recently_added', label: 'Añadido', order: 'DESC' },
-    { value: 'rating', label: 'Valoración', order: 'DESC' },
-    { value: 'play_count', label: 'Reproducciones', order: 'DESC' },
-    { value: 'random', label: 'Aleatorio', order: 'ASC' },
+    { value: 'name', label: 'Name', order: 'ASC' },
+    { value: 'recently_added', label: 'Added', order: 'DESC' },
+    { value: 'rating', label: 'Rating', order: 'DESC' },
+    { value: 'play_count', label: 'Plays', order: 'DESC' },
+    { value: 'random', label: 'Random', order: 'ASC' },
   ],
   artist: [
-    { value: 'name', label: 'Nombre', order: 'ASC' },
-    { value: 'play_count', label: 'Reproducciones', order: 'DESC' },
-    { value: 'rating', label: 'Valoración', order: 'DESC' },
+    { value: 'name', label: 'Name', order: 'ASC' },
+    { value: 'play_count', label: 'Plays', order: 'DESC' },
+    { value: 'rating', label: 'Rating', order: 'DESC' },
   ],
   song: [
-    { value: 'title', label: 'Título', order: 'ASC' },
-    { value: 'recently_added', label: 'Añadido', order: 'DESC' },
-    { value: 'play_count', label: 'Reproducciones', order: 'DESC' },
-    { value: 'rating', label: 'Valoración', order: 'DESC' },
-    { value: 'random', label: 'Aleatorio', order: 'ASC' },
+    { value: 'title', label: 'Title', order: 'ASC' },
+    { value: 'recently_added', label: 'Added', order: 'DESC' },
+    { value: 'play_count', label: 'Plays', order: 'DESC' },
+    { value: 'rating', label: 'Rating', order: 'DESC' },
+    { value: 'random', label: 'Random', order: 'ASC' },
   ],
   playlist: [
-    { value: 'name', label: 'Nombre', order: 'ASC' },
-    { value: 'recently_added', label: 'Añadido', order: 'DESC' },
+    { value: 'name', label: 'Name', order: 'ASC' },
+    { value: 'recently_added', label: 'Added', order: 'DESC' },
   ],
 }
 
 // Quick-filter pills for the catalogue views (album/song).
 const QUICK_FILTERS = [
-  { value: null, label: 'Todos' },
-  { value: 'starred', label: 'Favoritos', filter: { starred: true } },
-  { value: 'rated', label: 'Con valoración', filter: { has_rating: true } },
+  { value: null, label: 'All' },
+  { value: 'starred', label: 'Favorites', filter: { starred: true } },
+  { value: 'rated', label: 'Rated', filter: { has_rating: true } },
 ]
 
 const LibraryView = ({ view, layout, search, sortField, order, genreId, quick }) => {
@@ -114,7 +114,7 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
   }
 
   if (!loading && records.length === 0) {
-    return <div className="nd-empty">No hay nada en esta vista todavía.</div>
+    return <div className="nd-empty">Nothing in this view yet.</div>
   }
 
   const isArtist = q.resource === 'artist'
@@ -146,7 +146,7 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
             </div>
             <div className="acts">
               {r.homePageUrl ? (
-                <a href={r.homePageUrl} target="_blank" rel="noopener noreferrer" aria-label="Sitio de la emisora">
+                <a href={r.homePageUrl} target="_blank" rel="noopener noreferrer" aria-label="Station website">
                   <Icon name="external" size={18} />
                 </a>
               ) : null}
@@ -176,7 +176,7 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
                 <div className="lines">
                   <div className="t nd-trunc">{r.name || r.title}</div>
                   <div className="s nd-trunc">
-                    {isArtist ? `${r.albumCount || 0} álbumes` : r.artist || ''}
+                    {isArtist ? `${r.albumCount || 0} albums` : r.artist || ''}
                   </div>
                 </div>
               </div>
@@ -195,7 +195,7 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
           key={r.id}
           record={r}
           type={
-            { album: 'Álbum', artist: 'Artista', song: 'Pista', playlist: 'Lista', genre: 'Género', radio: 'Radio', share: 'Compartido' }[
+            { album: 'Album', artist: 'Artist', song: 'Track', playlist: 'List', genre: 'Genre', radio: 'Radio', share: 'Shared' }[
               q.resource
             ]
           }
@@ -222,13 +222,13 @@ const GenreFilter = ({ value, onChange }) => {
   )
   const genres = (ids || []).map((id) => data[id]).filter(Boolean)
   const options = [
-    { value: null, label: 'Todos los géneros' },
+    { value: null, label: 'All genres' },
     ...genres.map((g) => ({ value: g.id, label: g.name })),
   ]
   return (
     <NdSelect
       icon="genre"
-      ariaLabel="Filtrar por género"
+      ariaLabel="Filter by genre"
       value={value}
       options={options}
       onChange={onChange}
@@ -308,14 +308,14 @@ const Library = () => {
       />
       <div className="nd-lib-content">
         <div className="nd-page-head">
-          <h1>Biblioteca</h1>
+          <h1>Library</h1>
         </div>
         <div className="nd-toolbar" style={{ marginBottom: 16 }}>
           <div className="nd-search">
             <Icon name="search" className="nd-icon" />
             <input
-              placeholder="Buscar en tu biblioteca"
-              aria-label="Buscar en tu biblioteca"
+              placeholder="Search your library"
+              aria-label="Search your library"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -325,7 +325,7 @@ const Library = () => {
             <div className="nd-sortgroup">
               <NdSelect
                 icon="sort"
-                ariaLabel="Ordenar por"
+                ariaLabel="Sort by"
                 value={sortField || sortOptions[0].value}
                 options={sortOptions}
                 onChange={pickSort}
@@ -333,19 +333,19 @@ const Library = () => {
               <button
                 className="nd-circ"
                 onClick={toggleOrder}
-                aria-label={order === 'ASC' ? 'Ascendente' : 'Descendente'}
-                title={order === 'ASC' ? 'Ascendente' : 'Descendente'}
+                aria-label={order === 'ASC' ? 'Ascending' : 'Descending'}
+                title={order === 'ASC' ? 'Ascending' : 'Descending'}
                 type="button"
               >
                 <Icon name={order === 'ASC' ? 'expand' : 'collapse'} size={16} />
               </button>
             </div>
           ) : null}
-          <div className="nd-seg2" role="group" aria-label="Vista">
+          <div className="nd-seg2" role="group" aria-label="View">
             <button
               className={layout === 'list' ? 'on' : ''}
               onClick={() => setLayout('list')}
-              aria-label="Lista"
+              aria-label="List"
               aria-pressed={layout === 'list'}
               type="button"
             >
@@ -354,7 +354,7 @@ const Library = () => {
             <button
               className={layout === 'grid' ? 'on' : ''}
               onClick={() => setLayout('grid')}
-              aria-label="Cuadrícula"
+              aria-label="Grid"
               aria-pressed={layout === 'grid'}
               type="button"
             >
@@ -363,7 +363,7 @@ const Library = () => {
           </div>
         </div>
         {supportsQuick ? (
-          <div className="nd-pills" role="group" aria-label="Filtros rápidos" style={{ marginBottom: 20 }}>
+          <div className="nd-pills" role="group" aria-label="Quick filters" style={{ marginBottom: 20 }}>
             {QUICK_FILTERS.map((f) => (
               <button
                 key={f.value || 'all'}

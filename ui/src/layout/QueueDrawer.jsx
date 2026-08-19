@@ -76,7 +76,7 @@ const QueueDrawer = ({ open }) => {
   const saveAsPlaylist = () => {
     const ids = queue.map((t) => t.trackId || t.song?.id).filter(Boolean)
     if (!ids.length) return
-    const name = `Cola guardada`
+    const name = `Saved queue`
     dataProvider
       .create('playlist', { data: { name } })
       .then((res) =>
@@ -85,8 +85,8 @@ const QueueDrawer = ({ open }) => {
           filter: { playlist_id: res.data.id },
         }),
       )
-      .then(() => notify('Cola guardada como lista', 'info'))
-      .catch(() => notify('No se pudo guardar la cola', 'warning'))
+      .then(() => notify('Queue saved as a playlist', 'info'))
+      .catch(() => notify('Couldn\'t save the queue', 'warning'))
   }
 
   const doClear = () => {
@@ -116,21 +116,21 @@ const QueueDrawer = ({ open }) => {
   return (
     <aside
       className={`nd-queue${open ? ' open' : ''}`}
-      aria-label="Cola de reproducción"
+      aria-label="Play queue"
       aria-hidden={!open}
     >
       <div className="nd-qhead">
         <button className={`nd-qtab${tab === 'queue' ? ' on' : ''}`} onClick={() => setTab('queue')} type="button">
           <Icon name="queue" className="nd-icon" />
-          Cola
+          Queue
         </button>
         <button className={`nd-qtab${tab === 'history' ? ' on' : ''}`} onClick={() => setTab('history')} type="button">
           <Icon name="history" className="nd-icon" />
-          Historial
+          History
         </button>
         <button className={`nd-qtab${tab === 'lyrics' ? ' on' : ''}`} onClick={() => setTab('lyrics')} type="button">
           <Icon name="lyrics" className="nd-icon" />
-          Letra
+          Lyrics
         </button>
       </div>
 
@@ -138,11 +138,11 @@ const QueueDrawer = ({ open }) => {
         <div className="nd-qactions">
           <button className="nd-qact" onClick={saveAsPlaylist} type="button">
             <Icon name="playlistAdd" size={16} />
-            Guardar
+            Save
           </button>
           <button className="nd-qact" onClick={doClear} type="button">
             <Icon name="close" size={16} />
-            Limpiar
+            Clear
           </button>
         </div>
       ) : null}
@@ -158,11 +158,11 @@ const QueueDrawer = ({ open }) => {
               ))}
             </div>
           ) : (
-            <div className="nd-empty">Sin letra para esta pista.</div>
+            <div className="nd-empty">No lyrics for this track.</div>
           )
         ) : tab === 'history' ? (
           history.length === 0 ? (
-            <div className="nd-empty">Aún no has reproducido nada en esta sesión.</div>
+            <div className="nd-empty">You haven't played anything yet this session.</div>
           ) : (
             history.map((t, i) => (
               <div className="nd-qrow done" key={t.uuid || i}>
@@ -175,7 +175,7 @@ const QueueDrawer = ({ open }) => {
             ))
           )
         ) : queue.length === 0 ? (
-          <div className="nd-empty">La cola está vacía. Elige algo para reproducir.</div>
+          <div className="nd-empty">The queue is empty. Pick something to play.</div>
         ) : (
           queue.map((t, i) => {
             const upcoming = currentIndex >= 0 && i > currentIndex
@@ -210,13 +210,13 @@ const QueueDrawer = ({ open }) => {
           className={`nd-sw${autoplay ? ' on' : ''}`}
           role="switch"
           aria-checked={autoplay}
-          aria-label="Lectura automática"
+          aria-label="Autoplay"
           onClick={() => setAutoplay((a) => !a)}
           type="button"
         />
         <div>
-          <b>Lectura automática</b>
-          <span>Se reproducirán pistas similares cuando termine la cola.</span>
+          <b>Autoplay</b>
+          <span>Similar tracks will play when the queue ends.</span>
         </div>
       </div>
     </aside>

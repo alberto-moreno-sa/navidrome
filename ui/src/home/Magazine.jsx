@@ -37,12 +37,12 @@ const Hero = () => {
         {cover ? <img src={cover} alt="" /> : null}
       </div>
       <div className="nd-mag-copy">
-        <div className="nd-kicker">Revista · Portada</div>
+        <div className="nd-kicker">Magazine · Cover</div>
         <h1 className="nd-mag-title nd-trunc">{album.name}</h1>
         <div className="nd-mag-artist nd-trunc">{album.albumArtist || album.artist}</div>
         <div className="nd-mag-actions">
           <button className="nd-btn" onClick={() => play(album.id)} type="button">
-            <Icon name="play" size={18} /> Reproducir
+            <Icon name="play" size={18} /> Play
           </button>
         </div>
       </div>
@@ -54,19 +54,19 @@ const Magazine = () => (
   <div className="nd-page">
     <Hero />
     <AlbumRail
-      title="Lo más valorado"
-      subtitle="Tu biblioteca, ordenada por tus estrellas."
+      title="Top rated"
+      subtitle="Your library, ordered by your stars."
       sort="rating"
       filter={{ has_rating: true }}
     />
     <AlbumRail
-      title="Recién llegados"
-      subtitle="Lo último que entró en la colección."
+      title="Just arrived"
+      subtitle="The latest to enter the collection."
       sort="recently_added"
     />
     <AlbumRail
-      title="Redescúbrelo"
-      subtitle="Una selección al azar para volver a escuchar."
+      title="Rediscover"
+      subtitle="A random selection to listen to again."
       sort="random"
       order="ASC"
     />
@@ -83,7 +83,7 @@ const AlbumRail = ({ title, subtitle, sort, order = 'DESC', filter, count = 12 }
         ))}
       </Rail>
       {!loading && records.length === 0 ? (
-        <div className="nd-empty">Nada por aquí todavía.</div>
+        <div className="nd-empty">Nothing here yet.</div>
       ) : null}
     </Section>
   )

@@ -83,7 +83,7 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
         <div className="nd-histnav">
           <button
             className="nd-circ"
-            aria-label={translate('ra.action.back', { _: 'Atrás' })}
+            aria-label={translate('ra.action.back', { _: 'Back' })}
             onClick={() => history.goBack()}
             type="button"
           >
@@ -91,7 +91,7 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
           </button>
           <button
             className="nd-circ"
-            aria-label="Adelante"
+            aria-label="Forward"
             onClick={() => history.goForward()}
             type="button"
           >
@@ -101,15 +101,15 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
         <nav className="nd-nav" aria-label="Primary">
           <NavLink to="/" exact activeClassName="on">
             <Icon name="discover" className="nd-icon" />
-            Descubrir
+            Discover
           </NavLink>
           <NavLink to="/library" activeClassName="on">
             <Icon name="library" className="nd-icon" />
-            Biblioteca
+            Library
           </NavLink>
           <NavLink to="/magazine" activeClassName="on">
             <Icon name="magazine" className="nd-icon" />
-            Revista
+            Magazine
           </NavLink>
         </nav>
         <NdLibrarySelector />
@@ -119,8 +119,8 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
         <form className="nd-search" onSubmit={submitSearch} role="search">
           <Icon name="search" className="nd-icon" />
           <input
-            placeholder={translate('ra.action.search', { _: 'Búsqueda' })}
-            aria-label="Búsqueda"
+            placeholder={translate('ra.action.search', { _: 'Search' })}
+            aria-label="Search"
             value={term}
             onChange={(e) => runSearch(e.target.value)}
           />
@@ -128,7 +128,7 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
 
         <button
           className="nd-circ"
-          aria-label="Cola de reproducción"
+          aria-label="Play queue"
           aria-pressed={!!queueOpen}
           onClick={() => onToggleQueue && onToggleQueue()}
           type="button"
@@ -139,7 +139,7 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
         <div style={{ position: 'relative' }} ref={menuRef}>
           <button
             className="nd-avatar"
-            aria-label="Cuenta"
+            aria-label="Account"
             aria-haspopup="menu"
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((o) => !o)}
@@ -157,32 +157,32 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
               <div className="nd-menu-sec">
                 <h5>
                   <Icon name="sparkle" className="nd-icon" />
-                  Aspecto
+                  Appearance
                 </h5>
                 <div className="nd-seg">
-                  {themeBtn('Claro', 'sun', 'LightTheme')}
-                  {themeBtn('Oscuro', 'moon', 'DarkTheme')}
-                  {themeBtn('Sistema', 'system', AUTO_THEME_ID)}
+                  {themeBtn('Light', 'sun', 'LightTheme')}
+                  {themeBtn('Dark', 'moon', 'DarkTheme')}
+                  {themeBtn('System', 'system', AUTO_THEME_ID)}
                 </div>
               </div>
               <div className="nd-menu-list">
                 <button type="button" onClick={() => go('/settings')}>
                   <Icon name="account" className="nd-icon" />
-                  Cuenta
+                  Account
                 </button>
                 <button type="button" onClick={() => go('/settings')}>
                   <Icon name="settings" className="nd-icon" />
-                  Ajustes
+                  Settings
                 </button>
                 {isAdmin ? (
                   <button type="button" onClick={() => go('/admin')}>
                     <Icon name="admin" className="nd-icon" />
-                    Administración
+                    Administration
                   </button>
                 ) : null}
                 <button type="button" className="sep" onClick={() => logout()}>
                   <Icon name="logout" className="nd-icon" />
-                  Cerrar sesión
+                  Log out
                 </button>
               </div>
             </div>

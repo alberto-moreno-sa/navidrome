@@ -36,7 +36,7 @@ const ListRow = ({ record, type, to, onPlay, loved, onToggleLove, resource }) =>
         ) : onToggleLove ? (
           <button
             className={`fav${loved ? ' on' : ''}`}
-            aria-label={loved ? 'Quitar de favoritos' : 'Marcar favorito'}
+            aria-label={loved ? 'Remove from favorites' : 'Add to favorites'}
             onClick={onToggleLove}
             type="button"
             style={{ display: 'grid', placeItems: 'center' }}
@@ -44,10 +44,10 @@ const ListRow = ({ record, type, to, onPlay, loved, onToggleLove, resource }) =>
             <Icon name={loved ? 'heartFilled' : 'heart'} size={18} fill={loved} />
           </button>
         ) : null}
-        <button aria-label="Información" type="button" style={{ display: 'grid', placeItems: 'center' }}>
+        <button aria-label="Information" type="button" style={{ display: 'grid', placeItems: 'center' }}>
           <Icon name="info" size={18} />
         </button>
-        <button aria-label="Más" type="button" style={{ display: 'grid', placeItems: 'center' }}>
+        <button aria-label="More" type="button" style={{ display: 'grid', placeItems: 'center' }}>
           <Icon name="kebab" size={18} />
         </button>
       </div>

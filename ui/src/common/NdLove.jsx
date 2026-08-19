@@ -33,7 +33,7 @@ const NdLove = ({ resource, record, size = 18, className = '', stop = true, labe
   return (
     <button
       className={`${label ? 'nd-love-btn' : 'nd-love'}${loved ? ' on' : ''}${className ? ` ${className}` : ''}`}
-      aria-label={loved ? 'Quitar de favoritos' : 'Marcar favorito'}
+      aria-label={loved ? 'Remove from favorites' : 'Add to favorites'}
       aria-pressed={loved}
       onClick={onClick}
       disabled={loading}

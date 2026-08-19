@@ -22,7 +22,7 @@ const Row = ({ label, value }) =>
 
 // Fullscreen "now playing". Reuses the same hidden engine's <audio> element, so
 // it never starts or changes playback on its own — it only reflects and drives
-// what is already loaded. Descripción/Créditos show the real track metadata.
+// what is already loaded. Description/Credits show the real track metadata.
 const PlayerExpanded = ({ onClose }) => {
   const playerState = useSelector((s) => s.player)
   const dispatch = useDispatch()
@@ -69,16 +69,16 @@ const PlayerExpanded = ({ onClose }) => {
   const currentIndex = queue.findIndex((t) => t.uuid === currentUuid)
 
   const khz = song.sampleRate ? `${Math.round((song.sampleRate / 1000) * 10) / 10} kHz` : null
-  const channels = song.channels === 1 ? 'Mono' : song.channels === 2 ? 'Estéreo' : song.channels ? `${song.channels} canales` : null
+  const channels = song.channels === 1 ? 'Mono' : song.channels === 2 ? 'Stereo' : song.channels ? `${song.channels} channels` : null
 
   return (
-    <div className="nd-fs" role="dialog" aria-label="Reproductor">
+    <div className="nd-fs" role="dialog" aria-label="Player">
       <div className="nd-fs-head">
         <div className="nd-fs-tabs">
-          <button className={`nd-fs-tab${tab === 'desc' ? ' on' : ''}`} onClick={() => setTab('desc')} type="button">Descripción</button>
-          <button className={`nd-fs-tab${tab === 'cred' ? ' on' : ''}`} onClick={() => setTab('cred')} type="button">Créditos</button>
+          <button className={`nd-fs-tab${tab === 'desc' ? ' on' : ''}`} onClick={() => setTab('desc')} type="button">Description</button>
+          <button className={`nd-fs-tab${tab === 'cred' ? ' on' : ''}`} onClick={() => setTab('cred')} type="button">Credits</button>
         </div>
-        <button className="nd-circ" aria-label="Contraer" onClick={onClose} type="button"><Icon name="collapse" size={18} /></button>
+        <button className="nd-circ" aria-label="Collapse" onClick={onClose} type="button"><Icon name="collapse" size={18} /></button>
       </div>
       <div className="nd-fs-main">
         <div className="nd-fs-left">
@@ -100,36 +100,36 @@ const PlayerExpanded = ({ onClose }) => {
             <div className="nd-fs-times"><span>{fmt(tick.t)}</span><span>{fmt(tick.d)}</span></div>
           </div>
           <div className="nd-fs-transport">
-            <button className={shuffleOn ? 'on' : ''} aria-label="Aleatorio" aria-pressed={shuffleOn} onClick={toggleShuffle} type="button"><Icon name="shuffle" size={22} /></button>
-            <button aria-label="Anterior" onClick={call('playPrev')} type="button"><Icon name="prev" size={22} /></button>
-            <button className="main" aria-label={tick.paused ? 'Reproducir' : 'Pausar'} onClick={call('togglePlay')} type="button"><Icon name={tick.paused ? 'play' : 'pause'} size={30} /></button>
-            <button aria-label="Siguiente" onClick={call('playNext')} type="button"><Icon name="next" size={22} /></button>
-            <button className={repeatState !== 'off' ? 'on' : ''} aria-label={repeatState === 'one' ? 'Repetir una' : repeatState === 'all' ? 'Repetir todo' : 'Repetir'} aria-pressed={repeatState !== 'off'} onClick={cycleRepeat} type="button"><Icon name={repeatState === 'one' ? 'repeatOne' : 'repeat'} size={22} /></button>
+            <button className={shuffleOn ? 'on' : ''} aria-label="Shuffle" aria-pressed={shuffleOn} onClick={toggleShuffle} type="button"><Icon name="shuffle" size={22} /></button>
+            <button aria-label="Previous" onClick={call('playPrev')} type="button"><Icon name="prev" size={22} /></button>
+            <button className="main" aria-label={tick.paused ? 'Play' : 'Pause'} onClick={call('togglePlay')} type="button"><Icon name={tick.paused ? 'play' : 'pause'} size={30} /></button>
+            <button aria-label="Next" onClick={call('playNext')} type="button"><Icon name="next" size={22} /></button>
+            <button className={repeatState !== 'off' ? 'on' : ''} aria-label={repeatState === 'one' ? 'Repeat one' : repeatState === 'all' ? 'Repeat all' : 'Repeat'} aria-pressed={repeatState !== 'off'} onClick={cycleRepeat} type="button"><Icon name={repeatState === 'one' ? 'repeatOne' : 'repeat'} size={22} /></button>
           </div>
         </div>
         <div className="nd-fs-right">
           {tab === 'cred' ? (
             <>
-              <div className="nd-fs-qtitle">Créditos y metadatos</div>
+              <div className="nd-fs-qtitle">Credits and metadata</div>
               <dl className="nd-fs-kv">
-                <Row label="Título" value={song.title} />
-                <Row label="Artista" value={song.artist} />
-                <Row label="Álbum" value={song.album} />
-                <Row label="Artista del álbum" value={song.albumArtist} />
-                <Row label="Compositor" value={song.composer} />
-                <Row label="Año" value={song.year} />
-                <Row label="Género" value={song.genre} />
-                <Row label="Pista" value={song.trackNumber ? `${song.trackNumber}${song.discNumber ? ` · Disco ${song.discNumber}` : ''}` : null} />
-                <Row label="Formato" value={song.suffix ? song.suffix.toUpperCase() : null} />
-                <Row label="Tasa de bits" value={song.bitRate ? `${song.bitRate} kbps` : null} />
-                <Row label="Frecuencia" value={khz} />
-                <Row label="Profundidad" value={song.bitDepth ? `${song.bitDepth} bit` : null} />
-                <Row label="Canales" value={channels} />
+                <Row label="Title" value={song.title} />
+                <Row label="Artist" value={song.artist} />
+                <Row label="Album" value={song.album} />
+                <Row label="Album artist" value={song.albumArtist} />
+                <Row label="Composer" value={song.composer} />
+                <Row label="Year" value={song.year} />
+                <Row label="Genre" value={song.genre} />
+                <Row label="Track" value={song.trackNumber ? `${song.trackNumber}${song.discNumber ? ` · Disc ${song.discNumber}` : ''}` : null} />
+                <Row label="Format" value={song.suffix ? song.suffix.toUpperCase() : null} />
+                <Row label="Bit rate" value={song.bitRate ? `${song.bitRate} kbps` : null} />
+                <Row label="Sample rate" value={khz} />
+                <Row label="Bit depth" value={song.bitDepth ? `${song.bitDepth} bit` : null} />
+                <Row label="Channels" value={channels} />
               </dl>
             </>
           ) : (
             <>
-              <div className="nd-fs-qtitle">A continuación</div>
+              <div className="nd-fs-qtitle">Up next</div>
               <div className="nd-fs-qlist">
                 {queue.map((t, i) => {
                   const zone = currentIndex < 0 ? '' : i < currentIndex ? ' done' : i === currentIndex ? ' on' : ''
@@ -149,11 +149,11 @@ const PlayerExpanded = ({ onClose }) => {
                   className={`nd-sw${autoplay ? ' on' : ''}`}
                   role="switch"
                   aria-checked={autoplay}
-                  aria-label="Reproducción automática"
+                  aria-label="Autoplay"
                   onClick={() => setAutoplay((a) => !a)}
                   type="button"
                 />
-                <span>Reproducción automática al terminar la cola</span>
+                <span>Autoplay when the queue ends</span>
               </div>
             </>
           )}

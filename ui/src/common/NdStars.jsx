@@ -33,14 +33,14 @@ const NdStars = ({ resource, record, size = 16, className = '', stop = true }) =
       className={`nd-stars${className ? ` ${className}` : ''}`}
       onMouseLeave={() => setHover(0)}
       role="radiogroup"
-      aria-label="Valoración"
+      aria-label="Rating"
     >
       {[1, 2, 3, 4, 5].map((v) => (
         <button
           key={v}
           type="button"
           className={`nd-star${v <= shown ? ' on' : ''}`}
-          aria-label={`${v} ${v === 1 ? 'estrella' : 'estrellas'}`}
+          aria-label={`${v} ${v === 1 ? 'star' : 'stars'}`}
           disabled={loading}
           onMouseEnter={() => setHover(v)}
           onClick={set(v)}

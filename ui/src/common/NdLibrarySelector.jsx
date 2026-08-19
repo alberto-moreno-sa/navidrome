@@ -56,7 +56,7 @@ const NdLibrarySelector = () => {
   const active =
     selectedLibraries.length === 0 ? total : selectedLibraries.length
   const label =
-    active === total ? `Todas (${total})` : `${active} de ${total}`
+    active === total ? `All (${total})` : `${active} of ${total}`
 
   const toggle = (id) => {
     // Treat "all selected" as the concrete full list before removing one.
@@ -85,7 +85,7 @@ const NdLibrarySelector = () => {
       </button>
       {open ? (
         <div className="nd-libsel-menu" role="menu">
-          <div className="nd-libsel-head">Bibliotecas</div>
+          <div className="nd-libsel-head">Libraries</div>
           {userLibraries.map((lib) => {
             const checked =
               selectedLibraries.length === 0 ||

@@ -5,9 +5,9 @@ import { changeTheme } from '../actions'
 import { AUTO_THEME_ID } from '../consts'
 import Icon from '../common/Icon'
 
-const TABS = ['Apariencia', 'Reproducción', 'Letras', 'Metadata', 'Servicios', 'Atajos']
-const THEME_BY_LABEL = { Claro: 'LightTheme', Oscuro: 'DarkTheme', Sistema: AUTO_THEME_ID }
-const LABEL_BY_THEME = { LightTheme: 'Claro', DarkTheme: 'Oscuro', [AUTO_THEME_ID]: 'Sistema' }
+const TABS = ['Appearance', 'Playback', 'Lyrics', 'Metadata', 'Services', 'Shortcuts']
+const THEME_BY_LABEL = { Light: 'LightTheme', Dark: 'DarkTheme', System: AUTO_THEME_ID }
+const LABEL_BY_THEME = { LightTheme: 'Light', DarkTheme: 'Dark', [AUTO_THEME_ID]: 'System' }
 const LANG_CODE = { Español: 'es', English: 'en', Français: 'fr' }
 const CODE_LANG = { es: 'Español', en: 'English', fr: 'Français' }
 
@@ -50,7 +50,7 @@ const Row = ({ label, desc, children }) => (
 )
 
 const Settings = () => {
-  const [tab, setTab] = useState('Apariencia')
+  const [tab, setTab] = useState('Appearance')
   const dispatch = useDispatch()
   const themeState = useSelector((s) => s.theme)
   const locale = useLocale()
@@ -58,17 +58,17 @@ const Settings = () => {
 
   // Local-only prefs that mirror the prototype (real wiring lands per-feature).
   const [local, setLocal] = useState({
-    defaultView: 'Cuadrícula', notifications: true, pwa: true,
-    transcode: false, replayGain: 'Álbum', jukebox: false, resume: true,
+    defaultView: 'Grid', notifications: true, pwa: true,
+    transcode: false, replayGain: 'Album', jukebox: false, resume: true,
     lastfm: true, listenbrainz: true, nowPlaying: true,
   })
   const set = (k, v) => setLocal((p) => ({ ...p, [k]: v }))
 
-  const appearance = LABEL_BY_THEME[themeState] || 'Sistema'
+  const appearance = LABEL_BY_THEME[themeState] || 'System'
 
   return (
     <div className="nd-settings">
-      <div className="nd-page-head"><h1>Ajustes</h1></div>
+      <div className="nd-page-head"><h1>Settings</h1></div>
       <div className="nd-tabs">
         {TABS.map((t) => (
           <button key={t} className={`nd-chip${tab === t ? ' on' : ''}`} onClick={() => setTab(t)} type="button">
@@ -77,83 +77,83 @@ const Settings = () => {
         ))}
       </div>
 
-      {tab === 'Apariencia' && (
+      {tab === 'Appearance' && (
         <>
-          <Row label="Aspecto" desc="Claro, oscuro o según el sistema.">
-            <Options value={appearance} options={['Claro', 'Oscuro', 'Sistema']} onPick={(o) => dispatch(changeTheme(THEME_BY_LABEL[o]))} />
+          <Row label="Appearance" desc="Light, dark, or match the system.">
+            <Options value={appearance} options={['Light', 'Dark', 'System']} onPick={(o) => dispatch(changeTheme(THEME_BY_LABEL[o]))} />
           </Row>
-          <Row label="Vista por defecto" desc="Se usa al abrir la biblioteca.">
-            <Options value={local.defaultView} options={['Cuadrícula', 'Lista']} onPick={(o) => set('defaultView', o)} />
+          <Row label="Default view" desc="Used when opening the library.">
+            <Options value={local.defaultView} options={['Grid', 'List']} onPick={(o) => set('defaultView', o)} />
           </Row>
-          <Row label="Idioma" desc="Traducciones de la comunidad.">
+          <Row label="Language" desc="Community translations.">
             <Options
-              value={CODE_LANG[locale] || 'Español'}
+              value={CODE_LANG[locale] || 'English'}
               options={['Español', 'English', 'Français']}
               onPick={(o) => setLocale(LANG_CODE[o])}
             />
           </Row>
-          <Row label="Notificaciones de escritorio" desc="Avisa al cambiar de pista.">
-            <Toggle on={local.notifications} onClick={() => set('notifications', !local.notifications)} label="Notificaciones" />
+          <Row label="Desktop notifications" desc="Alerts when the track changes.">
+            <Toggle on={local.notifications} onClick={() => set('notifications', !local.notifications)} label="Notifications" />
           </Row>
-          <Row label="Instalar como PWA" desc="Service worker activo para uso sin conexión.">
+          <Row label="Install as PWA" desc="Service worker active for offline use.">
             <Toggle on={local.pwa} onClick={() => set('pwa', !local.pwa)} label="PWA" />
           </Row>
         </>
       )}
 
-      {tab === 'Reproducción' && (
+      {tab === 'Playback' && (
         <>
-          <Row label="Transcodificación al vuelo" desc="Desactivada para conservar FLAC bit-perfect.">
-            <Toggle on={local.transcode} onClick={() => set('transcode', !local.transcode)} label="Transcodificación" />
+          <Row label="On-the-fly transcoding" desc="Disabled to keep FLAC bit-perfect.">
+            <Toggle on={local.transcode} onClick={() => set('transcode', !local.transcode)} label="Transcoding" />
           </Row>
-          <Row label="ReplayGain" desc="Normalización según las etiquetas de ganancia.">
-            <Options value={local.replayGain} options={['Álbum', 'Pista', 'Desactivado']} onPick={(o) => set('replayGain', o)} />
+          <Row label="ReplayGain" desc="Normalization from gain tags.">
+            <Options value={local.replayGain} options={['Album', 'Track', 'Off']} onPick={(o) => set('replayGain', o)} />
           </Row>
-          <Row label="Modo jukebox" desc="Reproduce en la salida de audio del servidor.">
+          <Row label="Jukebox mode" desc="Plays through the server's audio output.">
             <Toggle on={local.jukebox} onClick={() => set('jukebox', !local.jukebox)} label="Jukebox" />
           </Row>
-          <Row label="Recordar posición" desc="Marcadores y reanudación en pistas largas.">
-            <Toggle on={local.resume} onClick={() => set('resume', !local.resume)} label="Recordar posición" />
+          <Row label="Remember position" desc="Bookmarks and resume on long tracks.">
+            <Toggle on={local.resume} onClick={() => set('resume', !local.resume)} label="Remember position" />
           </Row>
         </>
       )}
 
-      {tab === 'Letras' && (
+      {tab === 'Lyrics' && (
         <>
-          <Row label="Prioridad de fuentes" desc="Orden de búsqueda de la letra."><span className="val">.lrc → .elrc → .ttml → embebidas</span></Row>
-          <Row label="Extensiones sidecar" desc="Archivos junto al audio."><span className="val">.lrc · .elrc · .ttml · .srt · .txt · .yaml</span></Row>
-          <Row label="Sincronización" desc="Formatos con marcas de tiempo."><span className="val">LRC · Enhanced LRC · TTML</span></Row>
+          <Row label="Source priority" desc="Lyrics lookup order."><span className="val">.lrc → .elrc → .ttml → embedded</span></Row>
+          <Row label="Sidecar extensions" desc="Files next to the audio."><span className="val">.lrc · .elrc · .ttml · .srt · .txt · .yaml</span></Row>
+          <Row label="Synchronization" desc="Timestamped formats."><span className="val">LRC · Enhanced LRC · TTML</span></Row>
         </>
       )}
 
       {tab === 'Metadata' && (
         <>
-          <Row label="Etiquetas curadas" desc="Se leen tal como están en tus archivos."><span className="val">albumartist · compilation · discsubtitle · mood</span></Row>
-          <Row label="Agentes externos" desc="Biografías, imágenes y similares."><span className="val">Last.fm · Spotify · Deezer</span></Row>
-          <Row label="Carátulas" desc="Subida manual y animación de portada."><span className="val">JPEG · PNG · APNG</span></Row>
+          <Row label="Curated tags" desc="Read exactly as they are in your files."><span className="val">albumartist · compilation · discsubtitle · mood</span></Row>
+          <Row label="External agents" desc="Bios, images and similar artists."><span className="val">Last.fm · Spotify · Deezer</span></Row>
+          <Row label="Cover art" desc="Manual upload and cover animation."><span className="val">JPEG · PNG · APNG</span></Row>
         </>
       )}
 
-      {tab === 'Servicios' && (
+      {tab === 'Services' && (
         <>
-          <Row label="Scrobbling a Last.fm" desc="Cuenta autorizada.">
+          <Row label="Scrobbling to Last.fm" desc="Authorized account.">
             <Toggle on={local.lastfm} onClick={() => set('lastfm', !local.lastfm)} label="Last.fm" />
           </Row>
-          <Row label="Scrobbling a ListenBrainz" desc="Token verificado.">
+          <Row label="Scrobbling to ListenBrainz" desc="Verified token.">
             <Toggle on={local.listenbrainz} onClick={() => set('listenbrainz', !local.listenbrainz)} label="ListenBrainz" />
           </Row>
-          <Row label="Now Playing" desc="Publica la pista en curso en tiempo real.">
+          <Row label="Now Playing" desc="Publishes the current track in real time.">
             <Toggle on={local.nowPlaying} onClick={() => set('nowPlaying', !local.nowPlaying)} label="Now Playing" />
           </Row>
         </>
       )}
 
-      {tab === 'Atajos' && (
+      {tab === 'Shortcuts' && (
         <>
-          <Row label="Reproducir o pausar" desc="Global."><span className="val">Espacio</span></Row>
-          <Row label="Pista siguiente o anterior" desc="Global."><span className="val">N · P</span></Row>
-          <Row label="Buscar" desc="Enfoca la búsqueda global."><span className="val">Ctrl + K</span></Row>
-          <Row label="Cerrar menús" desc="Global."><span className="val">Escape</span></Row>
+          <Row label="Play or pause" desc="Global."><span className="val">Space</span></Row>
+          <Row label="Next or previous track" desc="Global."><span className="val">N · P</span></Row>
+          <Row label="Search" desc="Focuses the global search."><span className="val">Ctrl + K</span></Row>
+          <Row label="Close menus" desc="Global."><span className="val">Escape</span></Row>
         </>
       )}
     </div>

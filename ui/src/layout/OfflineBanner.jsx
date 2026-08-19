@@ -23,7 +23,7 @@ const OfflineBanner = () => {
   return (
     <div className="nd-offline" role="status" aria-live="polite">
       <Icon name="wifiOff" size={16} />
-      Sin conexión — la reproducción continúa con lo que ya está en la caché.
+      Offline — playback continues from what's already cached.
     </div>
   )
 }
