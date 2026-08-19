@@ -46,10 +46,24 @@ const QueueDrawer = ({ open }) => {
           <Icon name="history" className="nd-icon" />
           Historial
         </button>
+        <button
+          className={`nd-qtab${tab === 'lyrics' ? ' on' : ''}`}
+          onClick={() => setTab('lyrics')}
+          type="button"
+        >
+          <Icon name="info" className="nd-icon" />
+          Letra
+        </button>
       </div>
 
       <div className="nd-qlist">
-        {rows.length === 0 ? (
+        {tab === 'lyrics' ? (
+          <div
+            style={{ whiteSpace: 'pre-wrap', padding: 8, fontSize: 14, lineHeight: '22px', color: 'var(--text-secondary)' }}
+          >
+            {current.song?.lyrics || current.lyric || 'Sin letra para esta pista.'}
+          </div>
+        ) : rows.length === 0 ? (
           <div className="nd-empty">
             {tab === 'queue'
               ? 'La cola está vacía. Elige algo para reproducir.'

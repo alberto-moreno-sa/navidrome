@@ -508,3 +508,11 @@
 .nd-fs-qlist { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
 .nd-fs-foot { border-top: 1px solid var(--border); padding-top: 16px; margin-top: 12px; display: flex; align-items: flex-start; gap: 12px; }
 @media (max-width: 900px) { .nd-fs-main { grid-template-columns: 1fr; } .nd-fs-right { display: none; } }
+
+/* ── player: quality + output block ────────────────── */
+.nd-pqual { display: flex; align-items: center; gap: 10px; }
+.nd-pqlines { display: flex; flex-direction: column; }
+.nd-pqlines span { font-size: 12px; line-height: 16px; color: var(--text-strong); }
+.nd-pout { display: flex; align-items: center; gap: 9px; padding: 7px 9px; border-radius: var(--r-md); font-size: 12px; color: var(--text-strong); }
+.nd-pout:hover { background: var(--surface); }
+@media (max-width: 1100px) { .nd-pqual, .nd-pout { display: none; } }

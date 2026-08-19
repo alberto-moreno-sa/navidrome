@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Icon from '../common/Icon'
 import PlayerExpanded from './PlayerExpanded'
+import { resolution } from '../common/covers'
 
 const fmt = (s) => {
   if (!s || Number.isNaN(s)) return '00:00'
@@ -39,6 +40,7 @@ const PlayerBar = ({ onToggleQueue }) => {
   const sub = [current.singer || current.song?.artist, current.song?.album].filter(Boolean).join(' — ')
   const pct = tick.d ? (tick.t / tick.d) * 100 : 0
   const volPct = Math.round((tick.vol ?? 1) * 100)
+  const res = resolution(current.song)
 
   const seek = (e) => {
     const au = audioEl()
@@ -103,6 +105,19 @@ const PlayerBar = ({ onToggleQueue }) => {
                 <div className="nd-volfill" style={{ width: `${volPct}%` }} />
               </div>
             </div>
+            {res ? (
+              <div className="nd-pqual">
+                <span className="nd-res">{res}</span>
+                <div className="nd-pqlines">
+                  <span>Alta resolución</span>
+                  <span>Sin transcodificar</span>
+                </div>
+              </div>
+            ) : null}
+            <button className="nd-pout" type="button" aria-label="Salida de audio">
+              <Icon name="output" size={18} />
+              Salida predeterminada
+            </button>
             <button className="nd-pqueue" aria-label="Cola de reproducción" onClick={onToggleQueue} type="button">
               <Icon name="queue" size={18} />
               {queueLen > 0 ? <span className="nd-pcount">{queueLen}</span> : null}
