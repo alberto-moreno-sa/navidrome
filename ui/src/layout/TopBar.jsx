@@ -16,7 +16,27 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
   const translate = useTranslate()
   const theme = useSelector((s) => s.theme)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [term, setTerm] = useState(search || '')
   const menuRef = useRef(null)
+  const searchTimer = useRef(null)
+
+  // Global search: debounce navigation to /search while typing, and jump there
+  // immediately on Enter. Keeps the input controlled locally so it survives the
+  // route change.
+  const runSearch = (value) => {
+    setTerm(value)
+    if (onSearch) onSearch(value)
+    if (searchTimer.current) clearTimeout(searchTimer.current)
+    searchTimer.current = setTimeout(() => {
+      if (value.trim()) history.push(`/search?q=${encodeURIComponent(value.trim())}`)
+    }, 350)
+  }
+
+  const submitSearch = (e) => {
+    e.preventDefault()
+    if (searchTimer.current) clearTimeout(searchTimer.current)
+    if (term.trim()) history.push(`/search?q=${encodeURIComponent(term.trim())}`)
+  }
 
   const username =
     localStorage.getItem('username') || localStorage.getItem('userId') || 'User'
@@ -90,15 +110,15 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
       </div>
 
       <div className="nd-tb-right">
-        <div className="nd-search">
+        <form className="nd-search" onSubmit={submitSearch} role="search">
           <Icon name="search" className="nd-icon" />
           <input
             placeholder={translate('ra.action.search', { _: 'Búsqueda' })}
             aria-label="Búsqueda"
-            value={search || ''}
-            onChange={(e) => onSearch && onSearch(e.target.value)}
+            value={term}
+            onChange={(e) => runSearch(e.target.value)}
           />
-        </div>
+        </form>
 
         <button
           className="nd-circ"
@@ -148,10 +168,12 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
                   <Icon name="settings" className="nd-icon" />
                   Ajustes
                 </button>
-                <button type="button" onClick={() => go('/admin')}>
-                  <Icon name="support" className="nd-icon" />
-                  Administración
-                </button>
+                {isAdmin ? (
+                  <button type="button" onClick={() => go('/admin')}>
+                    <Icon name="admin" className="nd-icon" />
+                    Administración
+                  </button>
+                ) : null}
                 <button type="button" className="sep" onClick={() => logout()}>
                   <Icon name="logout" className="nd-icon" />
                   Cerrar sesión

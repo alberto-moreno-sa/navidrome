@@ -571,3 +571,17 @@
 .nd-love-btn:hover { color: var(--text-primary); background: var(--surface); }
 .nd-love-btn.on { color: var(--accent); }
 .nd-love-btn:disabled { cursor: default; opacity: 0.6; }
+
+/* ── Artist card (search / artist rails) ───────────── */
+.nd-artistcard {
+  display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: var(--r-md);
+  text-align: center; text-decoration: none; color: inherit; width: 100%;
+  transition: background var(--dur-fast) var(--ease);
+}
+.nd-artistcard:hover { background: var(--surface); }
+.nd-artistcard-photo {
+  aspect-ratio: 1; border-radius: var(--r-full); overflow: hidden; background: var(--surface-raised);
+}
+.nd-artistcard-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.nd-artistcard .t { font-size: 14px; font-weight: 600; }
+.nd-artistcard .s { font-size: 12px; color: var(--text-secondary); }
