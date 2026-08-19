@@ -9,6 +9,11 @@ import LibrarySidebar from '../common/LibrarySidebar'
 import { coverUrl } from '../common/covers'
 import { usePlayAlbum } from '../common/usePlayAlbum'
 
+const GENRE_COLORS = [
+  '#B4711F', '#A5401F', '#8E8B4A', '#B49A6A', '#5B3A9B', '#8E2F52', '#3A3A3A',
+  '#33409B', '#9A8324', '#2F4E86', '#2E2E2E', '#2C6F7E', '#9B3535',
+]
+
 // Which resource + sort/filter backs each sidebar view. Uses the fork's native
 // dataProvider — no new data path.
 const VIEW_QUERY = {
@@ -55,6 +60,43 @@ const LibraryView = ({ view, layout, search }) => {
 
   const isArtist = q.resource === 'artist'
   const isAlbumLike = q.resource === 'album' || q.resource === 'playlist'
+
+  if (q.resource === 'genre') {
+    return (
+      <div className="nd-genres" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
+        {records.map((g, i) => (
+          <div className="nd-genre" key={g.id} style={{ background: GENRE_COLORS[i % GENRE_COLORS.length], height: 96 }}>
+            {g.name}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (q.resource === 'radio') {
+    return (
+      <div className="nd-list">
+        {records.map((r) => (
+          <div className="nd-listrow" key={r.id}>
+            <span className="th" style={{ display: 'grid', placeItems: 'center', color: 'var(--text-secondary)' }}>
+              <Icon name="discover" size={20} />
+            </span>
+            <div className="lines">
+              <div className="t nd-trunc">{r.name}</div>
+              <div className="s nd-trunc" style={{ fontFamily: 'monospace', fontSize: 12 }}>{r.streamUrl}</div>
+            </div>
+            <div className="acts">
+              {r.homePageUrl ? (
+                <a href={r.homePageUrl} target="_blank" rel="noopener noreferrer" aria-label="Sitio de la emisora">
+                  <Icon name="external" size={18} />
+                </a>
+              ) : null}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
 
   if (layout === 'grid') {
     return (
