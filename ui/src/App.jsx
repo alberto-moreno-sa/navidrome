@@ -10,7 +10,8 @@ import {
 import { HotKeys } from 'react-hotkeys'
 import dataProvider from './dataProvider'
 import authProvider from './authProvider'
-import { Layout, Login, Logout } from './layout'
+import { Login, Logout } from './layout'
+import AureliaLayout from './aurelia/layout/AureliaLayout'
 import transcoding from './transcoding'
 import player from './player'
 import user from './user'
@@ -118,7 +119,7 @@ const Admin = (props) => {
       i18nProvider={i18nProvider}
       customRoutes={customRoutes}
       history={history}
-      layout={Layout}
+      layout={AureliaLayout}
       loginPage={Login}
       logoutButton={Logout}
       {...props}
