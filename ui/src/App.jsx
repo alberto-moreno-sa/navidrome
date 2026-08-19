@@ -12,6 +12,7 @@ import dataProvider from './dataProvider'
 import authProvider from './authProvider'
 import { Login, Logout } from './layout'
 import AureliaLayout from './aurelia/layout/AureliaLayout'
+import Discover from './aurelia/screens/Discover'
 import transcoding from './transcoding'
 import player from './player'
 import user from './user'
@@ -120,6 +121,7 @@ const Admin = (props) => {
       customRoutes={customRoutes}
       history={history}
       layout={AureliaLayout}
+      dashboard={Discover}
       loginPage={Login}
       logoutButton={Logout}
       {...props}
