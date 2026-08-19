@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useGetList } from 'react-admin'
 import { Link } from 'react-router-dom'
 import Icon from '../common/Icon'
 import Rail from '../common/Rail'
 import AlbumCard from '../common/AlbumCard'
 import ListRow from '../common/ListRow'
+import NdSelect from '../common/NdSelect'
 import LibrarySidebar from '../common/LibrarySidebar'
 import { coverUrl } from '../common/covers'
 import { usePlayAlbum } from '../common/usePlayAlbum'
@@ -37,14 +38,65 @@ const linkFor = (resource, id) => {
   return undefined
 }
 
-const LibraryView = ({ view, layout, search }) => {
+// Sort options per resource. Navidrome maps these virtual sort fields on the
+// native list API (the same ones Descubrir already relies on).
+const SORT_OPTIONS = {
+  album: [
+    { value: 'name', label: 'Nombre', order: 'ASC' },
+    { value: 'recently_added', label: 'Añadido', order: 'DESC' },
+    { value: 'rating', label: 'Valoración', order: 'DESC' },
+    { value: 'play_count', label: 'Reproducciones', order: 'DESC' },
+    { value: 'random', label: 'Aleatorio', order: 'ASC' },
+  ],
+  artist: [
+    { value: 'name', label: 'Nombre', order: 'ASC' },
+    { value: 'play_count', label: 'Reproducciones', order: 'DESC' },
+    { value: 'rating', label: 'Valoración', order: 'DESC' },
+  ],
+  song: [
+    { value: 'title', label: 'Título', order: 'ASC' },
+    { value: 'recently_added', label: 'Añadido', order: 'DESC' },
+    { value: 'play_count', label: 'Reproducciones', order: 'DESC' },
+    { value: 'rating', label: 'Valoración', order: 'DESC' },
+    { value: 'random', label: 'Aleatorio', order: 'ASC' },
+  ],
+  playlist: [
+    { value: 'name', label: 'Nombre', order: 'ASC' },
+    { value: 'recently_added', label: 'Añadido', order: 'DESC' },
+  ],
+}
+
+// Quick-filter pills for the catalogue views (album/song).
+const QUICK_FILTERS = [
+  { value: null, label: 'Todos' },
+  { value: 'starred', label: 'Favoritos', filter: { starred: true } },
+  { value: 'rated', label: 'Con valoración', filter: { has_rating: true } },
+]
+
+const LibraryView = ({ view, layout, search, sortField, order, genreId, quick }) => {
   const play = usePlayAlbum()
   const q = VIEW_QUERY[view] || VIEW_QUERY.albums
+
+  const opts = SORT_OPTIONS[q.resource] || []
+  const activeSort =
+    sortField && opts.some((o) => o.value === sortField)
+      ? { field: sortField, order: order || 'ASC' }
+      : q.sort
+
+  const filter = { ...(q.filter || {}) }
+  if (genreId && (q.resource === 'album' || q.resource === 'song')) {
+    filter.genre_id = genreId
+  }
+  const quickDef = QUICK_FILTERS.find((f) => f.value === quick)
+  if (quickDef && quickDef.filter && (q.resource === 'album' || q.resource === 'song')) {
+    Object.assign(filter, quickDef.filter)
+  }
+
   const { data, ids, loading } = useGetList(
     q.resource,
     { page: 1, perPage: 120 },
-    q.sort,
-    q.filter || {},
+    activeSort,
+    filter,
   )
   const term = search.trim().toLowerCase()
   const records = (ids || [])
@@ -155,12 +207,62 @@ const LibraryView = ({ view, layout, search }) => {
   )
 }
 
+// Genre dropdown, backed by the real genre list.
+const GenreFilter = ({ value, onChange }) => {
+  const { data, ids } = useGetList(
+    'genre',
+    { page: 1, perPage: 200 },
+    { field: 'name', order: 'ASC' },
+    {},
+  )
+  const genres = (ids || []).map((id) => data[id]).filter(Boolean)
+  const options = [
+    { value: null, label: 'Todos los géneros' },
+    ...genres.map((g) => ({ value: g.id, label: g.name })),
+  ]
+  return (
+    <NdSelect
+      icon="genre"
+      ariaLabel="Filtrar por género"
+      value={value}
+      options={options}
+      onChange={onChange}
+    />
+  )
+}
+
 const Library = () => {
   const [view, setView] = useState('albums')
   const [layout, setLayout] = useState('grid')
   const [search, setSearch] = useState('')
   const [manualCollapse, setManualCollapse] = useState(null)
   const [wrapRef, wrapWidth] = useContainerWidth()
+
+  // Toolbar state (sort / order / genre / quick filter), reset when the view
+  // changes so each catalogue view starts from its natural default.
+  const [sortField, setSortField] = useState(null)
+  const [order, setOrder] = useState('ASC')
+  const [genreId, setGenreId] = useState(null)
+  const [quick, setQuick] = useState(null)
+
+  const resource = (VIEW_QUERY[view] || VIEW_QUERY.albums).resource
+  const sortOptions = SORT_OPTIONS[resource] || []
+  const supportsGenre = resource === 'album' || resource === 'song'
+  const supportsQuick = resource === 'album' || resource === 'song'
+
+  useEffect(() => {
+    setSortField(null)
+    setOrder('ASC')
+    setGenreId(null)
+    setQuick(null)
+  }, [view])
+
+  const pickSort = (field) => {
+    const opt = sortOptions.find((o) => o.value === field)
+    setSortField(field)
+    setOrder(opt ? opt.order : 'ASC')
+  }
+  const toggleOrder = () => setOrder((o) => (o === 'ASC' ? 'DESC' : 'ASC'))
 
   // Real per-view counts from the native list API (total header only).
   const albums = useCount('album')
@@ -203,7 +305,7 @@ const Library = () => {
         <div className="nd-page-head">
           <h1>Biblioteca</h1>
         </div>
-        <div className="nd-toolbar" style={{ marginBottom: 24 }}>
+        <div className="nd-toolbar" style={{ marginBottom: 16 }}>
           <div className="nd-search">
             <Icon name="search" className="nd-icon" />
             <input
@@ -213,6 +315,27 @@ const Library = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
+          {supportsGenre ? <GenreFilter value={genreId} onChange={setGenreId} /> : null}
+          {sortOptions.length ? (
+            <div className="nd-sortgroup">
+              <NdSelect
+                icon="sort"
+                ariaLabel="Ordenar por"
+                value={sortField || sortOptions[0].value}
+                options={sortOptions}
+                onChange={pickSort}
+              />
+              <button
+                className="nd-circ"
+                onClick={toggleOrder}
+                aria-label={order === 'ASC' ? 'Ascendente' : 'Descendente'}
+                title={order === 'ASC' ? 'Ascendente' : 'Descendente'}
+                type="button"
+              >
+                <Icon name={order === 'ASC' ? 'expand' : 'collapse'} size={16} />
+              </button>
+            </div>
+          ) : null}
           <div className="nd-seg2" role="group" aria-label="Vista">
             <button
               className={layout === 'list' ? 'on' : ''}
@@ -234,7 +357,30 @@ const Library = () => {
             </button>
           </div>
         </div>
-        <LibraryView view={view} layout={layout} search={search} />
+        {supportsQuick ? (
+          <div className="nd-pills" role="group" aria-label="Filtros rápidos" style={{ marginBottom: 20 }}>
+            {QUICK_FILTERS.map((f) => (
+              <button
+                key={f.value || 'all'}
+                className={`nd-pill${quick === f.value ? ' on' : ''}`}
+                onClick={() => setQuick(f.value)}
+                aria-pressed={quick === f.value}
+                type="button"
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        <LibraryView
+          view={view}
+          layout={layout}
+          search={search}
+          sortField={sortField}
+          order={order}
+          genreId={genreId}
+          quick={quick}
+        />
       </div>
     </div>
   )

@@ -653,3 +653,38 @@
 .nd-sidebar.collapsed a { justify-content: center; padding-left: 0; padding-right: 0; }
 .nd-sidebar.collapsed a .lbl,
 .nd-sidebar.collapsed a .cnt { display: none; }
+
+/* ── Library toolbar: select, sort, pills ──────────── */
+.nd-select { position: relative; }
+.nd-select-btn {
+  display: inline-flex; align-items: center; gap: 8px; height: 38px; max-width: 190px;
+  padding: 0 12px; border: 0; border-radius: var(--r-full); background: var(--surface);
+  color: var(--text-secondary); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.nd-select-btn:hover { color: var(--text-primary); background: var(--surface-raised); }
+.nd-select-btn .nd-trunc { max-width: 120px; }
+.nd-select-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 60; min-width: 200px; max-height: 320px;
+  overflow-y: auto; padding: 6px; border-radius: var(--r-md); background: var(--surface-raised);
+  box-shadow: var(--shadow-lg); box-sizing: border-box;
+}
+.nd-select-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; height: 38px;
+  padding: 0 10px; border: 0; border-radius: var(--r-sm); background: transparent;
+  color: var(--text-secondary); font: inherit; font-size: 14px; cursor: pointer; text-align: left;
+}
+.nd-select-item:hover { background: var(--surface); color: var(--text-primary); }
+.nd-select-item.on { color: var(--text-primary); }
+.nd-select-item.on .nd-msym { color: var(--accent); }
+
+.nd-sortgroup { display: inline-flex; align-items: center; gap: 6px; }
+
+.nd-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.nd-pill {
+  height: 32px; padding: 0 14px; border: 0; border-radius: var(--r-full); background: var(--surface);
+  color: var(--text-secondary); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.nd-pill:hover { color: var(--text-primary); background: var(--surface-raised); }
+.nd-pill.on { color: var(--text-primary); background: var(--surface-raised); box-shadow: inset 0 0 0 1px var(--border-strong); }
