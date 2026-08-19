@@ -1,19 +1,20 @@
 import React from 'react'
 import Icon from './Icon'
 
-// Library sidebar (width 200, collapses to a 56px icon rail below 1080). Rows
-// are 34 tall with an 18px icon, a 14/500 label, and a right-aligned count.
-// The active row turns white.
+// Library sidebar (width 200, collapses to a 56px icon rail). Rows are 34 tall
+// with an 18px icon, a 14/500 label, and a right-aligned count. The active row
+// turns white. When collapsed, labels and counts hide and each row keeps a
+// title tooltip for accessibility.
 const VIEWS = [
-  { key: 'all', label: 'Todo', icon: 'library' },
-  { key: 'albums', label: 'Álbumes', icon: 'library' },
-  { key: 'artists', label: 'Artistas', icon: 'account' },
-  { key: 'songs', label: 'Canciones', icon: 'queue' },
-  { key: 'playlists', label: 'Listas', icon: 'queue' },
-  { key: 'genres', label: 'Géneros', icon: 'sliders' },
-  { key: 'radios', label: 'Radios', icon: 'discover' },
+  { key: 'all', label: 'Todo', icon: 'all' },
+  { key: 'albums', label: 'Álbumes', icon: 'album' },
+  { key: 'artists', label: 'Artistas', icon: 'artist' },
+  { key: 'songs', label: 'Canciones', icon: 'song' },
+  { key: 'playlists', label: 'Listas', icon: 'playlist' },
+  { key: 'genres', label: 'Géneros', icon: 'genre' },
+  { key: 'radios', label: 'Radios', icon: 'radio' },
   { key: 'favorites', label: 'Favoritos', icon: 'heart' },
-  { key: 'shares', label: 'Compartidos', icon: 'external' },
+  { key: 'shares', label: 'Compartidos', icon: 'share' },
 ]
 
 const fmtCount = (n) => {
@@ -23,13 +24,27 @@ const fmtCount = (n) => {
   return `${n}`
 }
 
-const LibrarySidebar = ({ view, onSelect, counts = {} }) => (
-  <nav className="nd-sidebar" aria-label="Biblioteca">
+const LibrarySidebar = ({ view, onSelect, counts = {}, collapsed, onToggle }) => (
+  <nav
+    className={`nd-sidebar${collapsed ? ' collapsed' : ''}`}
+    aria-label="Biblioteca"
+  >
+    <button
+      className="nd-sidebar-toggle"
+      onClick={onToggle}
+      aria-label={collapsed ? 'Expandir menú' : 'Contraer menú'}
+      aria-expanded={!collapsed}
+      type="button"
+    >
+      <Icon name={collapsed ? 'expand' : 'collapse'} size={18} />
+    </button>
     {VIEWS.map((v) => (
       <a
         key={v.key}
         href="#"
         className={view === v.key ? 'on' : ''}
+        title={collapsed ? v.label : undefined}
+        aria-label={v.label}
         onClick={(e) => {
           e.preventDefault()
           onSelect(v.key)

@@ -640,3 +640,16 @@
   .nd-mag-hero { grid-template-columns: 1fr; gap: 20px; }
   .nd-mag-cover { max-width: 200px; }
 }
+
+/* ── Library sidebar collapse ──────────────────────── */
+.nd-sidebar-toggle {
+  display: grid; place-items: center; width: 34px; height: 34px; margin: 0 0 6px auto;
+  border: 0; border-radius: var(--r-sm); background: transparent; color: var(--text-tertiary);
+  cursor: pointer; transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.nd-sidebar-toggle:hover { color: var(--text-primary); background: var(--surface); }
+.nd-sidebar.collapsed { width: 56px; }
+.nd-sidebar.collapsed .nd-sidebar-toggle { margin: 0 auto 6px; }
+.nd-sidebar.collapsed a { justify-content: center; padding-left: 0; padding-right: 0; }
+.nd-sidebar.collapsed a .lbl,
+.nd-sidebar.collapsed a .cnt { display: none; }

@@ -1,12 +1,9 @@
 import React, { useState } from 'react'
 import { useGetList } from 'react-admin'
+import { useCount } from '../common/useCount'
 
 const TABS = ['Actividad', 'Bibliotecas', 'Usuarios', 'Reproductores', 'Faltantes', 'Plugins', 'API']
 
-const useCount = (resource, filter) => {
-  const { total } = useGetList(resource, { page: 1, perPage: 1 }, { field: 'id', order: 'ASC' }, filter || {})
-  return total || 0
-}
 
 const Table = ({ resource, sort, columns }) => {
   const { data, ids, loading } = useGetList(resource, { page: 1, perPage: 100 }, sort, {})

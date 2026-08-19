@@ -8,6 +8,8 @@ import ListRow from '../common/ListRow'
 import LibrarySidebar from '../common/LibrarySidebar'
 import { coverUrl } from '../common/covers'
 import { usePlayAlbum } from '../common/usePlayAlbum'
+import { useCount } from '../common/useCount'
+import { useContainerWidth } from '../common/useContainerWidth'
 
 const GENRE_COLORS = [
   '#B4711F', '#A5401F', '#8E8B4A', '#B49A6A', '#5B3A9B', '#8E2F52', '#3A3A3A',
@@ -157,10 +159,46 @@ const Library = () => {
   const [view, setView] = useState('albums')
   const [layout, setLayout] = useState('grid')
   const [search, setSearch] = useState('')
+  const [manualCollapse, setManualCollapse] = useState(null)
+  const [wrapRef, wrapWidth] = useContainerWidth()
+
+  // Real per-view counts from the native list API (total header only).
+  const albums = useCount('album')
+  const artists = useCount('artist')
+  const songs = useCount('song')
+  const playlists = useCount('playlist')
+  const genres = useCount('genre')
+  const radios = useCount('radio')
+  const shares = useCount('share')
+  const favorites = useCount('album', { starred: true })
+  const counts = {
+    all: albums,
+    albums,
+    artists,
+    songs,
+    playlists,
+    genres,
+    radios,
+    favorites,
+    shares,
+  }
+
+  // Auto-collapse to the 56px icon rail when the library area is narrow
+  // (measured with ResizeObserver, never window width); a manual toggle
+  // overrides the automatic choice.
+  const autoCollapsed = wrapWidth > 0 && wrapWidth < 900
+  const collapsed = manualCollapse != null ? manualCollapse : autoCollapsed
+  const toggleCollapse = () => setManualCollapse(!collapsed)
 
   return (
-    <div className="nd-library">
-      <LibrarySidebar view={view} onSelect={setView} />
+    <div className="nd-library" ref={wrapRef}>
+      <LibrarySidebar
+        view={view}
+        onSelect={setView}
+        counts={counts}
+        collapsed={collapsed}
+        onToggle={toggleCollapse}
+      />
       <div className="nd-lib-content">
         <div className="nd-page-head">
           <h1>Biblioteca</h1>
