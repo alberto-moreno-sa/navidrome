@@ -739,3 +739,16 @@
 .nd-ppop-item.on { color: var(--text-primary); }
 .nd-ppop-item.on .nd-msym:last-child { color: var(--accent); }
 .nd-ppop-item:disabled { opacity: 0.45; cursor: default; }
+
+/* ── Expanded player: credits/metadata + autoplay ──── */
+.nd-fs-kv { display: flex; flex-direction: column; gap: 0; margin: 0; overflow-y: auto; }
+.nd-fs-krow {
+  display: grid; grid-template-columns: 140px 1fr; gap: 16px; padding: 12px 4px;
+  border-bottom: 1px solid var(--border);
+}
+.nd-fs-krow dt { color: var(--text-secondary); font-size: 13px; }
+.nd-fs-krow dd { margin: 0; font-size: 14px; font-weight: 600; word-break: break-word; }
+.nd-fs-autoplay {
+  display: flex; align-items: center; gap: 12px; margin-top: 16px; padding-top: 16px;
+  border-top: 1px solid var(--border); color: var(--text-secondary); font-size: 13px;
+}

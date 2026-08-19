@@ -1,24 +1,37 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import Icon from '../common/Icon'
 import NdLove from '../common/NdLove'
 import NdStars from '../common/NdStars'
+import { setPlayMode } from '../actions'
 
 const fmt = (s) => {
   if (!s || Number.isNaN(s)) return '00:00'
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 }
 const audioEl = () => (typeof document !== 'undefined' ? document.querySelector('audio') : null)
+const REPEAT_NEXT = { order: 'orderLoop', orderLoop: 'singleLoop', singleLoop: 'order', shufflePlay: 'orderLoop' }
+
+const Row = ({ label, value }) =>
+  value == null || value === '' ? null : (
+    <div className="nd-fs-krow">
+      <dt>{label}</dt>
+      <dd>{value}</dd>
+    </div>
+  )
 
 // Fullscreen "now playing". Reuses the same hidden engine's <audio> element, so
 // it never starts or changes playback on its own — it only reflects and drives
-// what is already loaded. Queue on the right, transport in the center.
+// what is already loaded. Descripción/Créditos show the real track metadata.
 const PlayerExpanded = ({ onClose }) => {
   const playerState = useSelector((s) => s.player)
+  const dispatch = useDispatch()
   const current = playerState?.current || {}
   const queue = playerState?.queue || []
+  const mode = playerState?.mode || 'order'
   const currentUuid = current.uuid
   const [tab, setTab] = useState('desc')
+  const [autoplay, setAutoplay] = useState(true)
   const [tick, setTick] = useState({ t: 0, d: 0, paused: true })
 
   useEffect(() => {
@@ -34,9 +47,13 @@ const PlayerExpanded = ({ onClose }) => {
     }
   }, [onClose])
 
-  const title = current.name || current.song?.title || '—'
-  const sub = [current.singer || current.song?.artist, current.song?.album].filter(Boolean).join(' — ')
+  const song = current.song || {}
+  const title = current.name || song.title || '—'
+  const sub = [current.singer || song.artist, song.album].filter(Boolean).join(' — ')
   const pct = tick.d ? (tick.t / tick.d) * 100 : 0
+  const shuffleOn = mode === 'shufflePlay'
+  const repeatState = mode === 'singleLoop' ? 'one' : mode === 'orderLoop' ? 'all' : 'off'
+
   const call = (fn) => () => {
     const au = audioEl()
     if (au && typeof au[fn] === 'function') au[fn]()
@@ -47,7 +64,12 @@ const PlayerExpanded = ({ onClose }) => {
     const r = e.currentTarget.getBoundingClientRect()
     au.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * tick.d
   }
+  const toggleShuffle = () => dispatch(setPlayMode(shuffleOn ? 'order' : 'shufflePlay'))
+  const cycleRepeat = () => dispatch(setPlayMode(REPEAT_NEXT[mode] || 'orderLoop'))
   const currentIndex = queue.findIndex((t) => t.uuid === currentUuid)
+
+  const khz = song.sampleRate ? `${Math.round((song.sampleRate / 1000) * 10) / 10} kHz` : null
+  const channels = song.channels === 1 ? 'Mono' : song.channels === 2 ? 'Estéreo' : song.channels ? `${song.channels} canales` : null
 
   return (
     <div className="nd-fs" role="dialog" aria-label="Reproductor">
@@ -65,10 +87,10 @@ const PlayerExpanded = ({ onClose }) => {
             <div className="t nd-trunc">{title}</div>
             <div className="s nd-trunc">{sub}</div>
           </div>
-          {current.song && !current.isRadio ? (
+          {song.id && !current.isRadio ? (
             <div className="nd-fs-actions">
-              <NdLove resource="song" record={current.song} size={20} />
-              <NdStars resource="song" record={current.song} size={18} />
+              <NdLove resource="song" record={song} size={20} />
+              <NdStars resource="song" record={song} size={18} />
             </div>
           ) : null}
           <div className="nd-fs-prog">
@@ -78,29 +100,63 @@ const PlayerExpanded = ({ onClose }) => {
             <div className="nd-fs-times"><span>{fmt(tick.t)}</span><span>{fmt(tick.d)}</span></div>
           </div>
           <div className="nd-fs-transport">
-            <button aria-label="Aleatorio" type="button"><Icon name="shuffle" size={22} /></button>
+            <button className={shuffleOn ? 'on' : ''} aria-label="Aleatorio" aria-pressed={shuffleOn} onClick={toggleShuffle} type="button"><Icon name="shuffle" size={22} /></button>
             <button aria-label="Anterior" onClick={call('playPrev')} type="button"><Icon name="prev" size={22} /></button>
             <button className="main" aria-label={tick.paused ? 'Reproducir' : 'Pausar'} onClick={call('togglePlay')} type="button"><Icon name={tick.paused ? 'play' : 'pause'} size={30} /></button>
             <button aria-label="Siguiente" onClick={call('playNext')} type="button"><Icon name="next" size={22} /></button>
-            <button aria-label="Repetir" type="button"><Icon name="repeat" size={22} /></button>
+            <button className={repeatState !== 'off' ? 'on' : ''} aria-label={repeatState === 'one' ? 'Repetir una' : repeatState === 'all' ? 'Repetir todo' : 'Repetir'} aria-pressed={repeatState !== 'off'} onClick={cycleRepeat} type="button"><Icon name={repeatState === 'one' ? 'repeatOne' : 'repeat'} size={22} /></button>
           </div>
         </div>
         <div className="nd-fs-right">
-          <div className="nd-fs-qtitle">Cola de reproducción</div>
-          <div className="nd-fs-qlist">
-            {queue.map((t, i) => {
-              const zone = currentIndex < 0 ? '' : i < currentIndex ? ' done' : i === currentIndex ? ' on' : ''
-              return (
-                <div className={`nd-qrow${zone}`} key={t.uuid || i}>
-                  <span className="th">{t.cover ? <img src={t.cover} alt="" /> : null}</span>
-                  <div className="lines">
-                    <div className="t nd-trunc">{t.name || t.title}</div>
-                    <div className="s nd-trunc">{t.singer || t.artist || ''}</div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+          {tab === 'cred' ? (
+            <>
+              <div className="nd-fs-qtitle">Créditos y metadatos</div>
+              <dl className="nd-fs-kv">
+                <Row label="Título" value={song.title} />
+                <Row label="Artista" value={song.artist} />
+                <Row label="Álbum" value={song.album} />
+                <Row label="Artista del álbum" value={song.albumArtist} />
+                <Row label="Compositor" value={song.composer} />
+                <Row label="Año" value={song.year} />
+                <Row label="Género" value={song.genre} />
+                <Row label="Pista" value={song.trackNumber ? `${song.trackNumber}${song.discNumber ? ` · Disco ${song.discNumber}` : ''}` : null} />
+                <Row label="Formato" value={song.suffix ? song.suffix.toUpperCase() : null} />
+                <Row label="Tasa de bits" value={song.bitRate ? `${song.bitRate} kbps` : null} />
+                <Row label="Frecuencia" value={khz} />
+                <Row label="Profundidad" value={song.bitDepth ? `${song.bitDepth} bit` : null} />
+                <Row label="Canales" value={channels} />
+              </dl>
+            </>
+          ) : (
+            <>
+              <div className="nd-fs-qtitle">A continuación</div>
+              <div className="nd-fs-qlist">
+                {queue.map((t, i) => {
+                  const zone = currentIndex < 0 ? '' : i < currentIndex ? ' done' : i === currentIndex ? ' on' : ''
+                  return (
+                    <div className={`nd-qrow${zone}`} key={t.uuid || i}>
+                      <span className="th">{t.cover ? <img src={t.cover} alt="" /> : null}</span>
+                      <div className="lines">
+                        <div className="t nd-trunc">{t.name || t.title}</div>
+                        <div className="s nd-trunc">{t.singer || t.artist || ''}</div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              <div className="nd-fs-autoplay">
+                <button
+                  className={`nd-sw${autoplay ? ' on' : ''}`}
+                  role="switch"
+                  aria-checked={autoplay}
+                  aria-label="Reproducción automática"
+                  onClick={() => setAutoplay((a) => !a)}
+                  type="button"
+                />
+                <span>Reproducción automática al terminar la cola</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
