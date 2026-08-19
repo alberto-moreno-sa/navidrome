@@ -752,3 +752,24 @@
   display: flex; align-items: center; gap: 12px; margin-top: 16px; padding-top: 16px;
   border-top: 1px solid var(--border); color: var(--text-secondary); font-size: 13px;
 }
+
+/* ── Queue: actions, drag reorder, synced lyrics ───── */
+.nd-qactions { display: flex; gap: 8px; padding: 0 12px 10px; }
+.nd-qact {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; flex: 1;
+  justify-content: center; border: 0; border-radius: var(--r-full); background: var(--surface);
+  color: var(--text-secondary); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.nd-qact:hover { color: var(--text-primary); background: var(--surface-raised); }
+
+.nd-qrow[draggable='true'] { cursor: grab; }
+.nd-qrow.dragging { opacity: 0.5; }
+.nd-qdrag { display: grid; place-items: center; color: var(--text-tertiary); flex: none; }
+
+.nd-lyrics { padding: 8px 4px; }
+.nd-lyric {
+  padding: 8px 8px; font-size: 15px; line-height: 22px; color: var(--text-tertiary);
+  transition: color var(--dur-fast) var(--ease); border-radius: var(--r-sm);
+}
+.nd-lyric.on { color: var(--accent); font-weight: 700; }
