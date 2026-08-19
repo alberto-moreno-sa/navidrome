@@ -107,6 +107,10 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
             <Icon name="library" className="nd-icon" />
             Biblioteca
           </NavLink>
+          <NavLink to="/magazine" activeClassName="on">
+            <Icon name="magazine" className="nd-icon" />
+            Revista
+          </NavLink>
         </nav>
         <NdLibrarySelector />
       </div>
