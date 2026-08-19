@@ -5,6 +5,7 @@ import { useLogout, useTranslate } from 'react-admin'
 import { changeTheme } from '../actions'
 import { AUTO_THEME_ID } from '../consts'
 import Icon from '../common/Icon'
+import NdLibrarySelector from '../common/NdLibrarySelector'
 
 // Top bar: wordmark, history nav, primary nav (Discover/Library), global search,
 // and the account menu. Data actions (theme, logout, navigation) reuse the
@@ -107,6 +108,7 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
             Biblioteca
           </NavLink>
         </nav>
+        <NdLibrarySelector />
       </div>
 
       <div className="nd-tb-right">
