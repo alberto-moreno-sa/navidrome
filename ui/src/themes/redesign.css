@@ -359,3 +359,23 @@
 @media (prefers-reduced-motion: reduce) {
   .nd-app * { transition: none !important; animation: none !important; }
 }
+
+/* ── library screen: sidebar + content ─────────────── */
+.nd-library { display: flex; align-items: flex-start; min-height: 100%; }
+.nd-library .nd-sidebar {
+  position: sticky; top: 0; align-self: stretch; max-height: 100%;
+}
+.nd-lib-content { flex: 1; min-width: 0; padding: 0 24px 40px; }
+.nd-toolbar {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.nd-toolbar .nd-search { width: auto; flex: 1; min-width: 200px; max-width: none; }
+.nd-seg2 { display: flex; gap: 4px; background: var(--surface); border-radius: var(--r-full); padding: 3px; flex: none; }
+.nd-seg2 button {
+  display: grid; place-items: center; width: 36px; height: 30px; border-radius: var(--r-full);
+  color: var(--text-secondary);
+}
+.nd-seg2 button.on { background: var(--surface-hover); color: #fff; }
+.nd-list { display: flex; flex-direction: column; }
+.nd-artcard { text-align: center; }
+.nd-artcard .nd-art { border-radius: var(--r-full); }

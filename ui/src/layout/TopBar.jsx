@@ -82,7 +82,7 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
             <Icon name="discover" className="nd-icon" />
             Descubrir
           </NavLink>
-          <NavLink to="/album" activeClassName="on">
+          <NavLink to="/library" activeClassName="on">
             <Icon name="library" className="nd-icon" />
             Biblioteca
           </NavLink>
