@@ -29,6 +29,7 @@ import {
 import PlayerToolbar from './PlayerToolbar'
 import { sendNotification } from '../utils'
 import subsonic from '../subsonic'
+import { setAudioInstance as setBusAudioInstance } from '../common/playerBus'
 import locale from './locale'
 import { keyMap } from '../hotkeys'
 import keyHandlers from './keyHandlers'
@@ -457,7 +458,7 @@ const Player = () => {
     <ThemeProvider theme={createMuiTheme(theme)}>
       <ReactJkMusicPlayer
         {...options}
-        className={classes.player}
+        className={`${classes.player} nd-hidden-engine`}
         onAudioListsChange={onAudioListsChange}
         onAudioVolumeChange={onAudioVolumeChange}
         onAudioProgress={onAudioProgress}
@@ -469,7 +470,10 @@ const Player = () => {
         onCoverClick={onCoverClick}
         onAudioError={onAudioError}
         onBeforeDestroy={onBeforeDestroy}
-        getAudioInstance={setAudioInstance}
+        getAudioInstance={(inst) => {
+          setAudioInstance(inst)
+          setBusAudioInstance(inst)
+        }}
       />
       <GlobalHotKeys handlers={handlers} keyMap={keyMap} allowChanges />
     </ThemeProvider>

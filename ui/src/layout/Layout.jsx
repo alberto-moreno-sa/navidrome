@@ -5,6 +5,7 @@ import { Dialogs } from '../dialogs/Dialogs'
 import useCurrentTheme from '../themes/useCurrentTheme'
 import TopBar from './TopBar'
 import QueueDrawer from './QueueDrawer'
+import PlayerBar from './PlayerBar'
 import '../themes/redesign.css'
 
 // App shell: three grid rows (top bar, scroll region, player) with the queue
@@ -37,7 +38,7 @@ const Layout = ({ children }) => {
           </main>
           <QueueDrawer open={queueOpen} />
         </div>
-        <div className="nd-player" aria-hidden="true" />
+        <PlayerBar onToggleQueue={() => setQueueOpen((o) => !o)} />
         <Notification />
         <Dialogs />
       </div>
