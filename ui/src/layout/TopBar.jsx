@@ -140,13 +140,17 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
                 </div>
               </div>
               <div className="nd-menu-list">
-                <button type="button" onClick={() => go('/personal')}>
+                <button type="button" onClick={() => go('/settings')}>
                   <Icon name="account" className="nd-icon" />
                   Cuenta
                 </button>
-                <button type="button" onClick={() => go('/personal')}>
+                <button type="button" onClick={() => go('/settings')}>
                   <Icon name="settings" className="nd-icon" />
                   Ajustes
+                </button>
+                <button type="button" onClick={() => go('/admin')}>
+                  <Icon name="support" className="nd-icon" />
+                  Administración
                 </button>
                 <button type="button" className="sep" onClick={() => logout()}>
                   <Icon name="logout" className="nd-icon" />

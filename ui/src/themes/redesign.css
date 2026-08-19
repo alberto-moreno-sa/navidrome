@@ -415,3 +415,28 @@
   .nd-artist-photo { width: 200px; height: 200px; }
   .nd-artist-name { font-size: 36px; }
 }
+
+/* ── settings / admin (chips + rows) ───────────────── */
+.nd-settings { padding: 0 24px 40px; max-width: 1100px; margin: 0 auto; }
+.nd-tabs { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; margin-bottom: 8px; }
+.nd-tabs::-webkit-scrollbar { display: none; }
+.nd-setrow { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+.nd-setrow .lbl { min-width: 0; }
+.nd-setrow .lbl b { font-size: 14px; font-weight: 600; display: block; }
+.nd-setrow .lbl span { font-size: 12px; line-height: 16px; color: var(--text-secondary); }
+.nd-setrow .ctl { flex: none; display: flex; align-items: center; gap: 12px; }
+.nd-setrow .val { color: var(--text-secondary); font-size: 14px; text-align: right; }
+.nd-optrow { display: flex; gap: 8px; }
+.nd-toggle { width: 36px; height: 20px; flex: none; border-radius: var(--r-full); padding: 2px; display: flex; background: var(--surface-raised); }
+.nd-toggle.on { background: var(--accent); justify-content: flex-end; }
+.nd-toggle .knob { width: 16px; height: 16px; border-radius: var(--r-full); background: #fff; display: block; }
+.nd-table { width: 100%; }
+.nd-tablehead { display: flex; gap: 24px; padding: 0 16px 8px; color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; }
+.nd-tablerow { display: flex; gap: 24px; align-items: center; height: 58px; padding: 0 16px; border-bottom: 1px solid var(--border); }
+.nd-tablerow .c0 { font-weight: 600; }
+.nd-tablerow .cd { color: var(--text-secondary); }
+.nd-metric-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.nd-metric { background: var(--surface); border-radius: var(--r-md); padding: 16px; }
+.nd-metric .v { font-size: 22px; font-weight: 700; line-height: 28px; }
+.nd-metric .k { color: var(--text-secondary); font-size: 12px; }
+.nd-band { background: var(--surface-accent); border-radius: var(--r-md); padding: 16px; color: var(--accent-soft); }
