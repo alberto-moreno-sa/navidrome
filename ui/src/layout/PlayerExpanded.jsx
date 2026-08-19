@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import Icon from '../common/Icon'
 import NdLove from '../common/NdLove'
 import NdStars from '../common/NdStars'
+import { useAudioState } from '../common/useAudioState'
 import { setPlayMode } from '../actions'
 
 const fmt = (s) => {
@@ -32,31 +33,40 @@ const PlayerExpanded = ({ onClose }) => {
   const currentUuid = current.uuid
   const [tab, setTab] = useState('desc')
   const [autoplay, setAutoplay] = useState(true)
-  const [tick, setTick] = useState({ t: 0, d: 0, paused: true })
+  const tick = useAudioState()
+  const [optimPaused, setOptimPaused] = useState(null)
 
   useEffect(() => {
-    const id = setInterval(() => {
-      const au = audioEl()
-      if (au) setTick({ t: au.currentTime || 0, d: au.duration || 0, paused: au.paused })
-    }, 250)
+    setOptimPaused(null)
+  }, [tick.paused])
+  useEffect(() => {
+    if (optimPaused == null) return undefined
+    const id = setTimeout(() => setOptimPaused(null), 600)
+    return () => clearTimeout(id)
+  }, [optimPaused])
+
+  useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose()
     document.addEventListener('keydown', onKey)
-    return () => {
-      clearInterval(id)
-      document.removeEventListener('keydown', onKey)
-    }
+    return () => document.removeEventListener('keydown', onKey)
   }, [onClose])
 
   const song = current.song || {}
   const title = current.name || song.title || '—'
   const sub = [current.singer || song.artist, song.album].filter(Boolean).join(' — ')
   const pct = tick.d ? (tick.t / tick.d) * 100 : 0
+  const paused = optimPaused != null ? optimPaused : tick.paused
   const shuffleOn = mode === 'shufflePlay'
   const repeatState = mode === 'singleLoop' ? 'one' : mode === 'orderLoop' ? 'all' : 'off'
 
   const call = (fn) => () => {
     const au = audioEl()
     if (au && typeof au[fn] === 'function') au[fn]()
+  }
+  const togglePlay = () => {
+    setOptimPaused(!paused)
+    const au = audioEl()
+    if (au && typeof au.togglePlay === 'function') au.togglePlay()
   }
   const seek = (e) => {
     const au = audioEl()
@@ -102,7 +112,7 @@ const PlayerExpanded = ({ onClose }) => {
           <div className="nd-fs-transport">
             <button className={shuffleOn ? 'on' : ''} aria-label="Shuffle" aria-pressed={shuffleOn} onClick={toggleShuffle} type="button"><Icon name="shuffle" size={22} /></button>
             <button aria-label="Previous" onClick={call('playPrev')} type="button"><Icon name="prev" size={22} /></button>
-            <button className="main" aria-label={tick.paused ? 'Play' : 'Pause'} onClick={call('togglePlay')} type="button"><Icon name={tick.paused ? 'play' : 'pause'} size={30} /></button>
+            <button className="main" aria-label={paused ? 'Play' : 'Pause'} onClick={togglePlay} type="button"><Icon name={paused ? 'play' : 'pause'} size={30} /></button>
             <button aria-label="Next" onClick={call('playNext')} type="button"><Icon name="next" size={22} /></button>
             <button className={repeatState !== 'off' ? 'on' : ''} aria-label={repeatState === 'one' ? 'Repeat one' : repeatState === 'all' ? 'Repeat all' : 'Repeat'} aria-pressed={repeatState !== 'off'} onClick={cycleRepeat} type="button"><Icon name={repeatState === 'one' ? 'repeatOne' : 'repeat'} size={22} /></button>
           </div>

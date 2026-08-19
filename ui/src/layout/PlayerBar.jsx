@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom'
 import Icon from '../common/Icon'
 import NdLove from '../common/NdLove'
 import PlayerExpanded from './PlayerExpanded'
+import { useAudioState } from '../common/useAudioState'
 import { setPlayMode } from '../actions'
 
 const fmt = (s) => {
@@ -31,26 +32,22 @@ const PlayerBar = ({ onToggleQueue }) => {
   const current = playerState?.current || {}
   const queueLen = playerState?.queue?.length || 0
   const mode = playerState?.mode || 'order'
-  const [tick, setTick] = useState({ t: 0, d: 0, paused: true, vol: 1, muted: false })
+  const tick = useAudioState()
   const [expanded, setExpanded] = useState(false)
   const [menu, setMenu] = useState(null) // 'quality' | 'output' | 'kebab' | null
+  const [optimPaused, setOptimPaused] = useState(null)
   const menuRef = useRef(null)
 
+  // Drop the optimistic play/pause hint once the engine confirms the real
+  // state, with a short safety timeout so a failed play() can't strand the icon.
   useEffect(() => {
-    const id = setInterval(() => {
-      const au = audioEl()
-      if (au) {
-        setTick({
-          t: au.currentTime || 0,
-          d: au.duration || 0,
-          paused: au.paused,
-          vol: au.volume,
-          muted: au.muted,
-        })
-      }
-    }, 250)
-    return () => clearInterval(id)
-  }, [])
+    setOptimPaused(null)
+  }, [tick.paused])
+  useEffect(() => {
+    if (optimPaused == null) return undefined
+    const id = setTimeout(() => setOptimPaused(null), 600)
+    return () => clearTimeout(id)
+  }, [optimPaused])
 
   useEffect(() => {
     if (!menu) return undefined
@@ -73,6 +70,13 @@ const PlayerBar = ({ onToggleQueue }) => {
   const sub = [current.singer || song.artist, song.album].filter(Boolean).join(' — ')
   const pct = tick.d ? (tick.t / tick.d) * 100 : 0
   const volPct = tick.muted ? 0 : Math.round((tick.vol ?? 1) * 100)
+  const paused = optimPaused != null ? optimPaused : tick.paused
+
+  const togglePlay = () => {
+    setOptimPaused(!paused) // instant icon flip; cleared by the real event
+    const au = audioEl()
+    if (au && typeof au.togglePlay === 'function') au.togglePlay()
+  }
 
   const shuffleOn = mode === 'shufflePlay'
   const repeatState = mode === 'singleLoop' ? 'one' : mode === 'orderLoop' ? 'all' : 'off'
@@ -156,8 +160,8 @@ const PlayerBar = ({ onToggleQueue }) => {
               <Icon name="shuffle" size={20} />
             </button>
             <button aria-label="Previous" onClick={call('playPrev')} type="button"><Icon name="prev" size={20} /></button>
-            <button className="main" aria-label={tick.paused ? 'Play' : 'Pause'} onClick={call('togglePlay')} type="button">
-              <Icon name={tick.paused ? 'play' : 'pause'} size={26} />
+            <button className="main" aria-label={paused ? 'Play' : 'Pause'} onClick={togglePlay} type="button">
+              <Icon name={paused ? 'play' : 'pause'} size={26} />
             </button>
             <button aria-label="Next" onClick={call('playNext')} type="button"><Icon name="next" size={20} /></button>
             <button
