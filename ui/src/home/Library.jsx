@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useGetList } from 'react-admin'
 import { Link } from 'react-router-dom'
 import Icon from '../common/Icon'
@@ -8,6 +8,7 @@ import ListRow from '../common/ListRow'
 import NdSelect from '../common/NdSelect'
 import LibrarySidebar from '../common/LibrarySidebar'
 import { SkeletonRail, SkeletonList } from '../common/Skeleton'
+import { useInfiniteList } from '../common/useInfiniteList'
 import { coverUrl } from '../common/covers'
 import { usePlayAlbum } from '../common/usePlayAlbum'
 import { useCount } from '../common/useCount'
@@ -74,6 +75,38 @@ const QUICK_FILTERS = [
   { value: 'rated', label: 'Rated', filter: { has_rating: true } },
 ]
 
+// Bottom-of-list footer that auto-loads the next page when it scrolls near the
+// viewport, with a Load more button as a guaranteed fallback and a progress
+// readout. Fixes the old fixed-cap bug where only the first page ever showed.
+const InfiniteFooter = ({ hasMore, loading, loaded, total, onLoadMore }) => {
+  const ref = useRef(null)
+  useEffect(() => {
+    if (!hasMore || loading) return undefined
+    const el = ref.current
+    if (!el || typeof IntersectionObserver === 'undefined') return undefined
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) onLoadMore()
+      },
+      { rootMargin: '300px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [hasMore, loading, onLoadMore])
+
+  return (
+    <div className="nd-inffoot" ref={ref}>
+      {hasMore ? (
+        <button className="nd-loadmore" onClick={onLoadMore} disabled={loading} type="button">
+          {loading ? 'Loading…' : `Load more · ${loaded} of ${total}`}
+        </button>
+      ) : total > 0 ? (
+        <span className="nd-infdone">{total.toLocaleString('en')} items</span>
+      ) : null}
+    </div>
+  )
+}
+
 const LibraryView = ({ view, layout, search, sortField, order, genreId, quick }) => {
   const play = usePlayAlbum()
   const q = VIEW_QUERY[view] || VIEW_QUERY.albums
@@ -93,35 +126,47 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
     Object.assign(filter, quickDef.filter)
   }
 
-  const { data, ids, loading } = useGetList(
+  const { records: rawRecords, total, loading, hasMore, loadMore } = useInfiniteList(
     q.resource,
-    { page: 1, perPage: 120 },
     activeSort,
     filter,
+    100,
   )
-  const term = search.trim().toLowerCase()
-  const records = (ids || [])
-    .map((id) => data[id])
-    .filter(Boolean)
-    .filter((r) => {
-      if (!term) return true
-      const hay = `${r.name || r.title || ''} ${r.albumArtist || r.artist || ''}`.toLowerCase()
-      return hay.includes(term)
-    })
 
-  if (loading && records.length === 0) {
+  const term = search.trim().toLowerCase()
+  const records = term
+    ? rawRecords.filter((r) =>
+        `${r.name || r.title || ''} ${r.albumArtist || r.artist || ''}`
+          .toLowerCase()
+          .includes(term),
+      )
+    : rawRecords
+
+  if (loading && rawRecords.length === 0) {
     return layout === 'list' ? <SkeletonList count={10} /> : <SkeletonRail count={12} />
   }
 
-  if (!loading && records.length === 0) {
+  if (!loading && rawRecords.length === 0) {
     return <div className="nd-empty">Nothing in this view yet.</div>
   }
 
   const isArtist = q.resource === 'artist'
   const isAlbumLike = q.resource === 'album' || q.resource === 'playlist'
 
+  // A local search filters only what's loaded; don't invite loading more then.
+  const footer = (
+    <InfiniteFooter
+      hasMore={hasMore && !term}
+      loading={loading}
+      loaded={rawRecords.length}
+      total={total}
+      onLoadMore={loadMore}
+    />
+  )
+
+  let content
   if (q.resource === 'genre') {
-    return (
+    content = (
       <div className="nd-genres" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
         {records.map((g, i) => (
           <div className="nd-genre" key={g.id} style={{ background: GENRE_COLORS[i % GENRE_COLORS.length], height: 96 }}>
@@ -130,10 +175,8 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
         ))}
       </div>
     )
-  }
-
-  if (q.resource === 'radio') {
-    return (
+  } else if (q.resource === 'radio') {
+    content = (
       <div className="nd-list">
         {records.map((r) => (
           <div className="nd-listrow" key={r.id}>
@@ -155,10 +198,8 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
         ))}
       </div>
     )
-  }
-
-  if (layout === 'grid') {
-    return (
+  } else if (layout === 'grid') {
+    content = (
       <Rail variant="dense">
         {records.map((r) =>
           isAlbumLike ? (
@@ -185,30 +226,36 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
         )}
       </Rail>
     )
+  } else {
+    content = (
+      <div className="nd-list">
+        {records.map((r) => (
+          <ListRow
+            key={r.id}
+            record={r}
+            type={
+              { album: 'Album', artist: 'Artist', song: 'Track', playlist: 'List', genre: 'Genre', radio: 'Radio', share: 'Shared' }[
+                q.resource
+              ]
+            }
+            to={linkFor(q.resource, r.id)}
+            onPlay={q.resource === 'album' ? () => play(r.id) : undefined}
+            resource={
+              ['album', 'artist', 'song', 'playlist'].includes(q.resource)
+                ? q.resource
+                : undefined
+            }
+          />
+        ))}
+      </div>
+    )
   }
 
-  // list layout
   return (
-    <div className="nd-list">
-      {records.map((r) => (
-        <ListRow
-          key={r.id}
-          record={r}
-          type={
-            { album: 'Album', artist: 'Artist', song: 'Track', playlist: 'List', genre: 'Genre', radio: 'Radio', share: 'Shared' }[
-              q.resource
-            ]
-          }
-          to={linkFor(q.resource, r.id)}
-          onPlay={q.resource === 'album' ? () => play(r.id) : undefined}
-          resource={
-            ['album', 'artist', 'song', 'playlist'].includes(q.resource)
-              ? q.resource
-              : undefined
-          }
-        />
-      ))}
-    </div>
+    <>
+      {content}
+      {footer}
+    </>
   )
 }
 

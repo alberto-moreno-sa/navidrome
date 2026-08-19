@@ -795,3 +795,14 @@
 @media (prefers-reduced-motion: reduce) {
   .nd-sk::after { animation: none; }
 }
+
+/* ── Infinite-list footer (Load more) ──────────────── */
+.nd-inffoot { display: flex; justify-content: center; padding: 24px 0 8px; }
+.nd-loadmore {
+  height: 40px; padding: 0 20px; border: 0; border-radius: var(--r-full);
+  background: var(--surface); color: var(--text-secondary); font: inherit; font-size: 13px;
+  font-weight: 600; cursor: pointer; transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.nd-loadmore:hover { color: var(--text-primary); background: var(--surface-raised); }
+.nd-loadmore:disabled { cursor: default; opacity: 0.7; }
+.nd-infdone { font-size: 12px; color: var(--text-tertiary); }
