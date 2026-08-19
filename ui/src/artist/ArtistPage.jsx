@@ -1,11 +1,76 @@
 import React, { useEffect, useState } from 'react'
-import { useShowController, useDataProvider } from 'react-admin'
+import { useShowController, useGetList } from 'react-admin'
 import { useDispatch } from 'react-redux'
 import subsonic from '../subsonic'
 import { playTracks } from '../actions'
 import Icon from '../common/Icon'
 import NdLove from '../common/NdLove'
+import Rail from '../common/Rail'
+import AlbumCard from '../common/AlbumCard'
+import { usePlaySong } from '../common/usePlaySong'
 import { coverUrl } from '../common/covers'
+
+// The artist's own discography, from the native list API (album_artist_id).
+const ArtistAlbums = ({ artistId }) => {
+  const { data, ids, loading } = useGetList(
+    'album',
+    { page: 1, perPage: 100 },
+    { field: 'max_year', order: 'DESC' },
+    { album_artist_id: artistId },
+  )
+  const albums = (ids || []).map((id) => data[id]).filter(Boolean)
+  if (loading || albums.length === 0) return null
+  return (
+    <section style={{ marginBottom: 40 }}>
+      <h2 className="nd-h2">Albums</h2>
+      <Rail variant="dense">
+        {albums.map((a) => (
+          <AlbumCard key={a.id} record={a} />
+        ))}
+      </Rail>
+    </section>
+  )
+}
+
+// The artist's most-played tracks, from the native song list (always available,
+// unlike getTopSongs which needs an external agent). Clicking plays the track
+// within this list as the queue.
+const ArtistSongs = ({ artistId }) => {
+  const playSong = usePlaySong()
+  const { data, ids, loading } = useGetList(
+    'song',
+    { page: 1, perPage: 12 },
+    { field: 'play_count', order: 'DESC' },
+    { album_artist_id: artistId },
+  )
+  const songs = (ids || []).map((id) => data[id]).filter(Boolean)
+  if (loading || songs.length === 0) return null
+  return (
+    <section style={{ marginBottom: 40 }}>
+      <h2 className="nd-h2">Songs</h2>
+      {songs.map((s, i) => (
+        <button
+          className="nd-topsong"
+          key={s.id}
+          onClick={() => playSong(s, songs)}
+          type="button"
+        >
+          <span className="n">{i + 1}</span>
+          <span className="th">
+            {coverUrl(s, 80) ? <img src={coverUrl(s, 80)} alt="" loading="lazy" /> : null}
+          </span>
+          <span className="lines">
+            <span className="t nd-trunc" style={{ display: 'block' }}>{s.title}</span>
+            <span className="s nd-trunc" style={{ display: 'block', color: 'var(--text-secondary)' }}>
+              {s.album}
+            </span>
+          </span>
+          <span className="dur">{fmtDur(s.duration)}</span>
+        </button>
+      ))}
+    </section>
+  )
+}
 
 const fmtDur = (s) => {
   if (!s) return ''
@@ -90,6 +155,10 @@ const ArtistPage = (props) => {
           </div>
         </div>
       </div>
+
+      <ArtistAlbums artistId={record.id} />
+
+      {top.length === 0 ? <ArtistSongs artistId={record.id} /> : null}
 
       {top.length ? (
         <section style={{ marginBottom: 40 }}>

@@ -4,13 +4,16 @@ import NdLove from './NdLove'
 import { coverUrl } from './covers'
 import { useAlbumResolution } from './useAlbumResolution'
 import { usePlayAlbum } from './usePlayAlbum'
+import { usePlayPlaylist } from './usePlay'
 
 // Dense/featured album card. Clicking the card plays the item; the scrim/play
 // overlay is the affordance. A favorite heart overlays the top-right of the
 // artwork on hover (kept as a sibling of the play button to avoid nesting
 // interactive elements). The resolution chip sits in the meta row.
 const AlbumCard = ({ record, flag, ghostFlag, lg, tag, resource = 'album', awards }) => {
-  const play = usePlayAlbum()
+  const playAlbum = usePlayAlbum()
+  const playPlaylist = usePlayPlaylist()
+  const play = resource === 'playlist' ? playPlaylist : playAlbum
   const res = useAlbumResolution(record, resource === 'album')
   if (!record) return null
   const cover = coverUrl(record, lg ? 400 : 300)

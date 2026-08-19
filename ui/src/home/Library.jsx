@@ -11,6 +11,8 @@ import { SkeletonRail, SkeletonList } from '../common/Skeleton'
 import { useInfiniteList } from '../common/useInfiniteList'
 import { coverUrl } from '../common/covers'
 import { usePlayAlbum } from '../common/usePlayAlbum'
+import { usePlaySong } from '../common/usePlaySong'
+import { usePlayGenre, usePlayRadio, usePlayPlaylist } from '../common/usePlay'
 import { useCount } from '../common/useCount'
 import { useContainerWidth } from '../common/useContainerWidth'
 
@@ -109,6 +111,10 @@ const InfiniteFooter = ({ hasMore, loading, loaded, total, onLoadMore }) => {
 
 const LibraryView = ({ view, layout, search, sortField, order, genreId, quick }) => {
   const play = usePlayAlbum()
+  const playSong = usePlaySong()
+  const playGenre = usePlayGenre()
+  const playRadio = usePlayRadio()
+  const playPlaylist = usePlayPlaylist()
   const q = VIEW_QUERY[view] || VIEW_QUERY.albums
 
   const opts = SORT_OPTIONS[q.resource] || []
@@ -169,9 +175,16 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
     content = (
       <div className="nd-genres" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
         {records.map((g, i) => (
-          <div className="nd-genre" key={g.id} style={{ background: GENRE_COLORS[i % GENRE_COLORS.length], height: 96 }}>
+          <button
+            className="nd-genre"
+            key={g.id}
+            style={{ background: GENRE_COLORS[i % GENRE_COLORS.length], height: 96, border: 0, cursor: 'pointer', textAlign: 'left' }}
+            onClick={() => playGenre(g.id)}
+            aria-label={`Play ${g.name}`}
+            type="button"
+          >
             {g.name}
-          </div>
+          </button>
         ))}
       </div>
     )
@@ -180,13 +193,24 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
       <div className="nd-list">
         {records.map((r) => (
           <div className="nd-listrow" key={r.id}>
-            <span className="th" style={{ display: 'grid', placeItems: 'center', color: 'var(--text-secondary)' }}>
-              <Icon name="discover" size={20} />
-            </span>
-            <div className="lines">
+            <button
+              className="th"
+              onClick={() => playRadio(r)}
+              aria-label={`Play ${r.name}`}
+              type="button"
+              style={{ display: 'grid', placeItems: 'center', color: 'var(--text-secondary)', border: 0, background: 'transparent', cursor: 'pointer' }}
+            >
+              <Icon name="radio" size={20} />
+            </button>
+            <button
+              className="lines"
+              onClick={() => playRadio(r)}
+              type="button"
+              style={{ border: 0, background: 'transparent', textAlign: 'left', cursor: 'pointer', minWidth: 0 }}
+            >
               <div className="t nd-trunc">{r.name}</div>
               <div className="s nd-trunc" style={{ fontFamily: 'monospace', fontSize: 12 }}>{r.streamUrl}</div>
-            </div>
+            </button>
             <div className="acts">
               {r.homePageUrl ? (
                 <a href={r.homePageUrl} target="_blank" rel="noopener noreferrer" aria-label="Station website">
@@ -201,10 +225,33 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
   } else if (layout === 'grid') {
     content = (
       <Rail variant="dense">
-        {records.map((r) =>
-          isAlbumLike ? (
-            <AlbumCard key={r.id} record={r} />
-          ) : (
+        {records.map((r) => {
+          if (isAlbumLike) return <AlbumCard key={r.id} record={r} resource={q.resource} />
+          if (q.resource === 'song') {
+            return (
+              <button
+                key={r.id}
+                className="nd-card"
+                onClick={() => playSong(r, records)}
+                aria-label={`Play ${r.title || r.name}`}
+                type="button"
+              >
+                <div className="nd-art">
+                  {coverUrl(r, 300) ? <img src={coverUrl(r, 300)} alt="" loading="lazy" /> : null}
+                  <div className="nd-scrim">
+                    <span className="nd-play"><Icon name="play" size={16} /></span>
+                  </div>
+                </div>
+                <div className="nd-meta">
+                  <div className="lines">
+                    <div className="t nd-trunc">{r.title || r.name}</div>
+                    <div className="s nd-trunc">{r.artist || ''}</div>
+                  </div>
+                </div>
+              </button>
+            )
+          }
+          return (
             <Link
               key={r.id}
               className={`nd-card${isArtist ? ' nd-artcard' : ''}`}
@@ -222,8 +269,8 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
                 </div>
               </div>
             </Link>
-          ),
-        )}
+          )
+        })}
       </Rail>
     )
   } else {
@@ -238,8 +285,16 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
                 q.resource
               ]
             }
-            to={linkFor(q.resource, r.id)}
-            onPlay={q.resource === 'album' ? () => play(r.id) : undefined}
+            to={q.resource === 'song' ? undefined : linkFor(q.resource, r.id)}
+            onPlay={
+              q.resource === 'album'
+                ? () => play(r.id)
+                : q.resource === 'song'
+                  ? () => playSong(r, records)
+                  : q.resource === 'playlist'
+                    ? () => playPlaylist(r.id)
+                    : undefined
+            }
             resource={
               ['album', 'artist', 'song', 'playlist'].includes(q.resource)
                 ? q.resource
@@ -253,6 +308,14 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
 
   return (
     <>
+      {q.resource === 'song' && records.length ? (
+        <div className="nd-viewactions">
+          <button className="nd-btn" onClick={() => playSong(records[0], records)} type="button">
+            <Icon name="play" size={18} /> Play all
+          </button>
+          <span className="nd-viewcount">{records.length} loaded</span>
+        </div>
+      ) : null}
       {content}
       {footer}
     </>

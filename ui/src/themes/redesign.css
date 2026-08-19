@@ -806,3 +806,7 @@
 .nd-loadmore:hover { color: var(--text-primary); background: var(--surface-raised); }
 .nd-loadmore:disabled { cursor: default; opacity: 0.7; }
 .nd-infdone { font-size: 12px; color: var(--text-tertiary); }
+
+/* ── Library view actions (Play all) ───────────────── */
+.nd-viewactions { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.nd-viewcount { font-size: 13px; color: var(--text-tertiary); }

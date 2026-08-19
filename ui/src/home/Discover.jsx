@@ -106,21 +106,13 @@ const ListsSection = () => {
     >
       <Rail variant="dense">
         {records.map((pl) => (
-          <Link className="nd-card" to={`/playlist/${pl.id}/show`} key={pl.id}>
-            <div className="nd-art">
-              {coverUrl(pl, 300) ? <img src={coverUrl(pl, 300)} alt="" loading="lazy" /> : null}
-              <span className="nd-flag ghost">List</span>
-              <div className="nd-scrim">
-                <span className="nd-play"><Icon name="play" size={16} /></span>
-              </div>
-            </div>
-            <div className="nd-meta">
-              <div className="lines">
-                <div className="t nd-trunc">{pl.name}</div>
-                <div className="s tag nd-trunc">{pl.ownerName ? `By ${pl.ownerName}` : 'List'}</div>
-              </div>
-            </div>
-          </Link>
+          <AlbumCard
+            key={pl.id}
+            record={pl}
+            resource="playlist"
+            ghostFlag="List"
+            tag={pl.ownerName ? `By ${pl.ownerName}` : 'List'}
+          />
         ))}
       </Rail>
       {!loading && records.length === 0 ? (
