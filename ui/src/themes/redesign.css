@@ -698,3 +698,44 @@
   transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
 }
 .nd-catchip:hover { background: var(--surface-raised); color: var(--text-primary); }
+
+/* ── Player: active transport states + popovers ────── */
+.nd-ptransport button.on { color: var(--accent); }
+.nd-pvolbtn {
+  display: grid; place-items: center; width: 30px; height: 30px; border: 0; background: transparent;
+  color: var(--text-secondary); cursor: pointer; border-radius: var(--r-sm);
+  transition: color var(--dur-fast) var(--ease);
+}
+.nd-pvolbtn:hover { color: var(--text-primary); }
+.nd-pvolbtn[aria-pressed='true'] { color: var(--accent); }
+
+.nd-pmenu-anchor { position: relative; }
+.nd-pqual { border: 0; background: transparent; padding: 0; cursor: pointer; display: inline-flex; }
+.nd-pqual.on .nd-res, .nd-pout.on { color: var(--text-primary); }
+
+.nd-ppop {
+  position: absolute; bottom: calc(100% + 12px); right: 0; z-index: 70; min-width: 240px;
+  padding: 12px; border-radius: var(--r-md); background: var(--surface-raised);
+  box-shadow: var(--shadow-lg); box-sizing: border-box;
+}
+.nd-ppop-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;
+  color: var(--text-tertiary); margin-bottom: 10px;
+}
+.nd-ppop-kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0; }
+.nd-ppop-kv dt { color: var(--text-secondary); font-size: 13px; }
+.nd-ppop-kv dd { margin: 0; text-align: right; font-size: 13px; font-weight: 600; }
+.nd-ppop-note {
+  margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--text-tertiary); line-height: 16px;
+}
+.nd-ppop-item {
+  display: flex; align-items: center; gap: 10px; width: 100%; height: 40px; padding: 0 8px;
+  border: 0; border-radius: var(--r-sm); background: transparent; color: var(--text-secondary);
+  font: inherit; font-size: 14px; cursor: pointer; text-align: left;
+}
+.nd-ppop-item span { flex: 1; min-width: 0; }
+.nd-ppop-item:hover { background: var(--surface); color: var(--text-primary); }
+.nd-ppop-item.on { color: var(--text-primary); }
+.nd-ppop-item.on .nd-msym:last-child { color: var(--accent); }
+.nd-ppop-item:disabled { opacity: 0.45; cursor: default; }
