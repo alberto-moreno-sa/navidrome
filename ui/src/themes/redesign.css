@@ -773,3 +773,25 @@
   transition: color var(--dur-fast) var(--ease); border-radius: var(--r-sm);
 }
 .nd-lyric.on { color: var(--accent); font-weight: 700; }
+
+/* ── Transversal states: skeletons + offline ───────── */
+.nd-sk { position: relative; overflow: hidden; background: var(--surface-raised); border-radius: var(--r-md); }
+.nd-sk-line { height: 12px; border-radius: var(--r-sm); margin-top: 6px; }
+.nd-sk-line.short { width: 60%; }
+.nd-meta .lines .nd-sk-line:first-child { margin-top: 0; width: 85%; }
+.nd-sk::after {
+  content: ''; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.06), transparent);
+  animation: nd-shimmer 1.4s infinite;
+}
+@keyframes nd-shimmer { 100% { transform: translateX(100%); } }
+
+.nd-offline {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 8px 16px; background: var(--surface-accent); color: var(--accent-soft);
+  font-size: 13px; font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nd-sk::after { animation: none; }
+}

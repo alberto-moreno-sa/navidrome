@@ -5,6 +5,7 @@ import Icon from '../common/Icon'
 import Rail from '../common/Rail'
 import Section from '../common/Section'
 import AlbumCard from '../common/AlbumCard'
+import { SkeletonRail } from '../common/Skeleton'
 import { coverUrl, resolution } from '../common/covers'
 import { usePlayAlbum } from '../common/usePlayAlbum'
 
@@ -63,18 +64,22 @@ const AlbumRailSection = ({
   const { records, loading } = useAlbums(sort, order, filter, count)
   return (
     <Section title={title} subtitle={subtitle} seeAllTo={seeAllTo}>
-      <Rail variant={variant}>
-        {records.map((r, i) => (
-          <AlbumCard
-            key={r.id}
-            record={r}
-            lg={lg}
-            flag={i === 0 ? firstFlag : null}
-            ghostFlag={ghostFlag}
-            awards={awardFor ? awardFor(r) : undefined}
-          />
-        ))}
-      </Rail>
+      {loading && records.length === 0 ? (
+        <SkeletonRail count={Math.min(count, 8)} />
+      ) : (
+        <Rail variant={variant}>
+          {records.map((r, i) => (
+            <AlbumCard
+              key={r.id}
+              record={r}
+              lg={lg}
+              flag={i === 0 ? firstFlag : null}
+              ghostFlag={ghostFlag}
+              awards={awardFor ? awardFor(r) : undefined}
+            />
+          ))}
+        </Rail>
+      )}
       {!loading && records.length === 0 ? (
         <div className="nd-empty">Nada por aquí todavía.</div>
       ) : null}

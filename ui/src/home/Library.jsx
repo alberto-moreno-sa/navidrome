@@ -7,6 +7,7 @@ import AlbumCard from '../common/AlbumCard'
 import ListRow from '../common/ListRow'
 import NdSelect from '../common/NdSelect'
 import LibrarySidebar from '../common/LibrarySidebar'
+import { SkeletonRail, SkeletonList } from '../common/Skeleton'
 import { coverUrl } from '../common/covers'
 import { usePlayAlbum } from '../common/usePlayAlbum'
 import { useCount } from '../common/useCount'
@@ -107,6 +108,10 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
       const hay = `${r.name || r.title || ''} ${r.albumArtist || r.artist || ''}`.toLowerCase()
       return hay.includes(term)
     })
+
+  if (loading && records.length === 0) {
+    return layout === 'list' ? <SkeletonList count={10} /> : <SkeletonRail count={12} />
+  }
 
   if (!loading && records.length === 0) {
     return <div className="nd-empty">No hay nada en esta vista todavía.</div>
