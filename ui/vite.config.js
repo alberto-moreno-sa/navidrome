@@ -4,6 +4,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 const frontendPort = parseInt(process.env.PORT) || 4533
 const backendPort = frontendPort + 100
+// Dev only: point the API proxy at a remote backend (e.g. the Pi) instead of localhost.
+const devBackend = process.env.ND_DEV_BACKEND || 'http://localhost:' + backendPort
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -29,7 +31,10 @@ export default defineConfig({
     host: true,
     port: frontendPort,
     proxy: {
-      '^/(auth|api|rest|backgrounds)/.*': 'http://localhost:' + backendPort,
+      '^/(auth|api|rest|backgrounds)/.*': {
+        target: devBackend,
+        changeOrigin: true,
+      },
     },
   },
   base: './',

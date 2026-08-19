@@ -1,0 +1,111 @@
+/* Aurelia design tokens v1.0
+   Companion to 01-design-system.md. Drop into a global stylesheet. */
+
+:root {
+  /* ── surfaces ─────────────────────────────────────── */
+  --bg-base: #121212;
+  --bg-topbar: #181818;
+  --surface: #242424;
+  --surface-raised: #353535;
+  --surface-hover: #424242;
+  --surface-overlay: rgb(50 50 50 / 0.4);
+  --surface-accent: #2A2215;
+
+  /* ── text ─────────────────────────────────────────── */
+  --text-primary: #FFFFFF;
+  --text-secondary: #BDBDBD;
+  --text-muted: #939393;
+  --text-strong: #E6E6E6;
+  --text-on-light: #242424;
+
+  /* ── accent ───────────────────────────────────────── */
+  --accent: #F5A623;
+  --accent-soft: #FFCB74;
+  --accent-buffer: rgb(245 166 35 / 0.3);
+  --accent-ink: #1A1206;          /* text on a solid accent fill */
+
+  /* ── secondary accent, modals only ────────────────── */
+  --info: #0070EF;
+
+  /* ── line ─────────────────────────────────────────── */
+  --border: rgb(255 255 255 / 0.1);
+
+  /* ── typography ───────────────────────────────────── */
+  --font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --display-size: 120px;   --display-weight: 500;   --display-line: 1;
+  --h1-size: 48px;         --h1-weight: 700;        --h1-line: 62px;
+  --h2-size: 22px;         --h2-weight: 700;        --h2-line: 28px;
+  --rank-size: 22px;       --rank-weight: 500;      --rank-line: 28px;
+  --body-lg-size: 15px;    --body-lg-weight: 700;   --body-lg-line: 24px;
+  --body-size: 14px;       --body-weight: 500;      --body-line: 18px;
+  --body-strong-weight: 600;
+  --caption-size: 12px;    --caption-weight: 500;   --caption-line: 16px;
+  --caption-strong-weight: 600;
+  --micro-size: 10px;      --micro-weight: 700;     --micro-line: 18px;
+
+  --tracking-tight-xl: -4px;   /* display */
+  --tracking-tight: -1px;      /* h1 */
+  --tracking-wide: 0.4px;      /* caption strong */
+  --tracking-caps: 1.12px;     /* uppercase micro */
+
+  /* ── space ────────────────────────────────────────── */
+  --sp-1: 4px;   --sp-2: 5px;   --sp-3: 6px;   --sp-4: 8px;
+  --sp-5: 12px;  --sp-6: 16px;  --sp-7: 24px;  --sp-8: 32px;
+  --sp-9: 40px;  --sp-10: 48px; --sp-11: 56px;
+
+  /* ── shape ────────────────────────────────────────── */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-full: 9999px;
+
+  /* ── elevation ────────────────────────────────────── */
+  --shadow-md: 0 2px 16px rgb(0 0 0 / 0.16);
+  --shadow-lg: 0 4px 32px rgb(0 0 0 / 0.2);
+
+  /* ── motion ───────────────────────────────────────── */
+  --dur-fast: 120ms;
+  --dur-panel: 180ms;
+  --ease: cubic-bezier(.2, 0, .2, 1);
+
+  /* ── layout ───────────────────────────────────────── */
+  --content-max: 1920px;
+  --gutter: 24px;
+  --rail-gap: 5px;
+  --rail-bleed: -12px;      /* pairs with 12px card padding */
+  --topbar-h: 56px;
+  --pageheader-h: 62px;
+  --player-h: 75px;
+  --drawer-w: 340px;
+  --sidebar-w: 200px;
+}
+
+/* Base defaults implied by the system. */
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: var(--body-size);
+  font-weight: var(--body-weight);
+  line-height: var(--body-line);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The grid bleed. Any rail inside the content column uses this. */
+.rail {
+  display: grid;
+  gap: var(--rail-gap);
+  width: calc(100% + 24px);
+  margin-inline: var(--rail-bleed);
+}
+
+/* Focus floor. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
