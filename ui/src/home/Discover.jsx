@@ -13,6 +13,37 @@ const GENRE_COLORS = [
   '#33409B', '#9A8324', '#2F4E86', '#2E2E2E', '#2C6F7E', '#9B3535',
 ]
 
+// Editorial recognition derived from real data: an album's own rating becomes
+// an award pill (workspace_premium), so the badge is honest, not invented.
+const awardsForRating = (album) => {
+  const r = album.rating || 0
+  if (r >= 5) return [{ label: 'Obra maestra', icon: 'award' }]
+  if (r >= 4) return [{ label: 'Aclamado', icon: 'award' }]
+  if (r >= 1) return [{ label: 'Recomendado', icon: 'award' }]
+  return undefined
+}
+
+// A read-only row of category (genre) chips — editorial taxonomy in accent-soft.
+const CategoryChips = ({ count = 11 }) => {
+  const { data, ids } = useGetList(
+    'genre',
+    { page: 1, perPage: count },
+    { field: 'name', order: 'ASC' },
+    {},
+  )
+  const genres = (ids || []).map((id) => data[id]).filter(Boolean).slice(0, count)
+  if (!genres.length) return null
+  return (
+    <div className="nd-catchips" aria-label="Categorías">
+      {genres.map((g) => (
+        <Link className="nd-catchip" to="/library" key={g.id}>
+          {g.name}
+        </Link>
+      ))}
+    </div>
+  )
+}
+
 const useAlbums = (sort, order, filter, perPage) => {
   const { data, ids, loading } = useGetList(
     'album',
@@ -27,7 +58,7 @@ const useAlbums = (sort, order, filter, perPage) => {
 // A dense/featured rail of album cards backed by one getAlbumList2-equivalent query.
 const AlbumRailSection = ({
   title, subtitle, seeAllTo, sort, order = 'DESC', filter, count = 16,
-  variant = 'dense', firstFlag, ghostFlag, lg,
+  variant = 'dense', firstFlag, ghostFlag, lg, awardFor,
 }) => {
   const { records, loading } = useAlbums(sort, order, filter, count)
   return (
@@ -40,6 +71,7 @@ const AlbumRailSection = ({
             lg={lg}
             flag={i === 0 ? firstFlag : null}
             ghostFlag={ghostFlag}
+            awards={awardFor ? awardFor(r) : undefined}
           />
         ))}
       </Rail>
@@ -65,6 +97,7 @@ const ListsSection = () => {
       title="Listas de la redacción"
       subtitle="Tus listas y las públicas del servidor."
       seeAllTo="/playlist"
+      chips={<CategoryChips count={11} />}
     >
       <Rail variant="dense">
         {records.map((pl) => (
@@ -244,6 +277,7 @@ const Discover = () => (
       count={6}
       variant="featured"
       lg
+      awardFor={awardsForRating}
     />
   </div>
 )
