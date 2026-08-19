@@ -528,3 +528,46 @@
   flex: none; user-select: none; overflow: hidden;
 }
 .nd-msym.fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+
+/* ── Favorite (love) + rating stars ────────────────── */
+.nd-love {
+  display: grid; place-items: center; width: 34px; height: 34px; flex: none;
+  border: 0; background: transparent; color: var(--text-secondary); cursor: pointer;
+  border-radius: var(--r-full); transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.nd-love:hover { color: var(--text-primary); background: var(--surface); }
+.nd-love.on { color: var(--accent); }
+.nd-love:disabled { cursor: default; opacity: 0.6; }
+
+.nd-stars { display: inline-flex; align-items: center; gap: 2px; }
+.nd-star {
+  display: grid; place-items: center; border: 0; background: transparent; padding: 1px;
+  color: var(--text-tertiary); cursor: pointer; transition: color var(--dur-fast) var(--ease);
+}
+.nd-star:hover { color: var(--accent-soft); }
+.nd-star.on { color: var(--accent); }
+.nd-star:disabled { cursor: default; }
+
+/* Album card favorite overlay (top-right of the artwork, on hover) */
+.nd-cardwrap { position: relative; width: 100%; }
+.nd-cardfav {
+  position: absolute; top: 20px; right: 20px; z-index: 2; width: 32px; height: 32px;
+  background: rgb(0 0 0 / 0.55); color: #fff; backdrop-filter: blur(4px);
+  opacity: 0; transform: translateY(-2px); transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.nd-cardwrap:hover .nd-cardfav,
+.nd-cardfav:focus-visible { opacity: 1; transform: none; }
+.nd-cardfav:hover { background: rgb(0 0 0 / 0.7); }
+.nd-cardfav.on { opacity: 1; transform: none; color: var(--accent); background: rgb(0 0 0 / 0.55); }
+
+.nd-fs-actions { display: flex; align-items: center; gap: 14px; margin-top: 4px; }
+
+.nd-love-btn {
+  display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px;
+  border: 0; border-radius: var(--r-full); background: transparent; color: var(--text-secondary);
+  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.nd-love-btn:hover { color: var(--text-primary); background: var(--surface); }
+.nd-love-btn.on { color: var(--accent); }
+.nd-love-btn:disabled { cursor: default; opacity: 0.6; }

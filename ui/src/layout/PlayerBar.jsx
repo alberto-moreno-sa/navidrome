@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Icon from '../common/Icon'
+import NdLove from '../common/NdLove'
 import PlayerExpanded from './PlayerExpanded'
 import { resolution } from '../common/covers'
 
@@ -81,6 +82,9 @@ const PlayerBar = ({ onToggleQueue }) => {
               <div className="t nd-trunc">{title}</div>
               <div className="s nd-trunc">{sub}</div>
             </div>
+            {current.song && !current.isRadio ? (
+              <NdLove resource="song" record={current.song} size={18} />
+            ) : null}
             <div className="nd-ptime">
               <span className="a">{fmt(tick.t)}</span>
               <span>—</span>

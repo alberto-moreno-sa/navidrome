@@ -142,6 +142,11 @@ const LibraryView = ({ view, layout, search }) => {
           }
           to={linkFor(q.resource, r.id)}
           onPlay={q.resource === 'album' ? () => play(r.id) : undefined}
+          resource={
+            ['album', 'artist', 'song', 'playlist'].includes(q.resource)
+              ? q.resource
+              : undefined
+          }
         />
       ))}
     </div>

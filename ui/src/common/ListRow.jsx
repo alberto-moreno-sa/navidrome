@@ -1,12 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import Icon from './Icon'
+import NdLove from './NdLove'
 import { coverUrl, resolution } from './covers'
 
 // Library list-view row (height 58). Thumbnail 44, title 14/600, a metadata
 // line joining type and artist with a bullet, and a right-aligned action
 // cluster (resolution chip, favorite, info, kebab). The row highlights on hover.
-const ListRow = ({ record, type, to, onPlay, loved, onToggleLove }) => {
+// When `resource` is provided the favorite is wired to the data layer directly;
+// otherwise it falls back to the passed `onToggleLove`/`loved` props.
+const ListRow = ({ record, type, to, onPlay, loved, onToggleLove, resource }) => {
   if (!record) return null
   const title = record.name || record.title || '—'
   const artist = record.albumArtist || record.artist || record.ownerName || ''
@@ -28,7 +31,9 @@ const ListRow = ({ record, type, to, onPlay, loved, onToggleLove }) => {
       </div>
       <div className="acts">
         {res ? <span className="nd-res">{res}</span> : null}
-        {onToggleLove ? (
+        {resource ? (
+          <NdLove resource={resource} record={record} size={18} />
+        ) : onToggleLove ? (
           <button
             className={`fav${loved ? ' on' : ''}`}
             aria-label={loved ? 'Quitar de favoritos' : 'Marcar favorito'}
@@ -36,7 +41,7 @@ const ListRow = ({ record, type, to, onPlay, loved, onToggleLove }) => {
             type="button"
             style={{ display: 'grid', placeItems: 'center' }}
           >
-            <Icon name={loved ? 'heartFilled' : 'heart'} size={18} />
+            <Icon name={loved ? 'heartFilled' : 'heart'} size={18} fill={loved} />
           </button>
         ) : null}
         <button aria-label="Información" type="button" style={{ display: 'grid', placeItems: 'center' }}>

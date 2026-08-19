@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import subsonic from '../subsonic'
 import { playTracks } from '../actions'
 import Icon from '../common/Icon'
+import NdLove from '../common/NdLove'
 import { coverUrl } from '../common/covers'
 
 const fmtDur = (s) => {
@@ -84,7 +85,7 @@ const ArtistPage = (props) => {
               <Icon name="play" size={18} /> Reproducir
             </button>
             <button className="nd-btn text" type="button">Radio del artista</button>
-            <button className="nd-btn text" type="button">Seguir</button>
+            <NdLove resource="artist" record={record} size={18} label="Seguir" labelOn="Siguiendo" />
             {!info ? <span className="agents">Cargando información externa…</span> : null}
           </div>
         </div>

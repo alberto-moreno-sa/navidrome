@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Icon from '../common/Icon'
+import NdLove from '../common/NdLove'
+import NdStars from '../common/NdStars'
 
 const fmt = (s) => {
   if (!s || Number.isNaN(s)) return '00:00'
@@ -63,6 +65,12 @@ const PlayerExpanded = ({ onClose }) => {
             <div className="t nd-trunc">{title}</div>
             <div className="s nd-trunc">{sub}</div>
           </div>
+          {current.song && !current.isRadio ? (
+            <div className="nd-fs-actions">
+              <NdLove resource="song" record={current.song} size={20} />
+              <NdStars resource="song" record={current.song} size={18} />
+            </div>
+          ) : null}
           <div className="nd-fs-prog">
             <div className="nd-fs-bar" onClick={seek} role="slider" aria-label="Progreso" tabIndex={-1}>
               <div className="nd-fs-fill" style={{ width: `${pct}%` }} />
