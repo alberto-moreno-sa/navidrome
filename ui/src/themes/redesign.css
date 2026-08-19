@@ -810,3 +810,27 @@
 /* ── Library view actions (Play all) ───────────────── */
 .nd-viewactions { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
 .nd-viewcount { font-size: 13px; color: var(--text-tertiary); }
+
+/* ── Scrubbable progress bars (Spotify-style thumb) ── */
+.nd-pbar { position: relative; cursor: pointer; }
+.nd-pthumb {
+  position: absolute; top: 50%; transform: translate(-50%, -50%);
+  width: 12px; height: 12px; border-radius: 50%; background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.5); opacity: 0; pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.nd-pbar:hover .nd-pthumb, .nd-pbar.scrubbing .nd-pthumb { opacity: 1; }
+.nd-pbar:hover .nd-pfill, .nd-pbar.scrubbing .nd-pfill { background: var(--accent-soft); }
+
+.nd-fs-bar { position: relative; cursor: pointer; }
+.nd-fs-thumb {
+  position: absolute; top: 50%; transform: translate(-50%, -50%);
+  width: 14px; height: 14px; border-radius: 50%; background: #fff;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 0.5); opacity: 0; pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.nd-fs-bar:hover .nd-fs-thumb, .nd-fs-bar.scrubbing .nd-fs-thumb { opacity: 1; }
+
+/* Queue rows as buttons (jump to track) */
+button.nd-qrow { width: 100%; border: 0; background: transparent; font: inherit; text-align: left; cursor: pointer; }
+button.nd-qrow:hover { background: var(--surface); }

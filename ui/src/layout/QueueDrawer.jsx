@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useDataProvider, useNotify } from 'react-admin'
 import Icon from '../common/Icon'
-import { clearQueue, syncQueue } from '../actions'
+import { clearQueue, syncQueue, playTracks } from '../actions'
 
 const audioEl = () => (typeof document !== 'undefined' ? document.querySelector('audio') : null)
 
@@ -57,6 +57,18 @@ const QueueDrawer = ({ open }) => {
     if (i < currentIndex) return ' done'
     if (i === currentIndex) return ' on'
     return ''
+  }
+
+  const jumpTo = (item) => {
+    const songs = queue.map((t) => t.song).filter(Boolean)
+    const keyed = {}
+    const ids = []
+    songs.forEach((s) => {
+      keyed[s.id] = s
+      ids.push(s.id)
+    })
+    const startId = (item.song && item.song.id) || item.trackId
+    if (ids.length) dispatch(playTracks(keyed, ids, startId))
   }
 
   const onDrop = (to) => {
@@ -183,11 +195,13 @@ const QueueDrawer = ({ open }) => {
               <div
                 className={`nd-qrow${zoneOf(i)}${dragIndex === i ? ' dragging' : ''}`}
                 key={t.uuid || i}
+                onClick={() => jumpTo(t)}
                 draggable={upcoming}
                 onDragStart={() => upcoming && setDragIndex(i)}
                 onDragOver={(e) => upcoming && e.preventDefault()}
                 onDrop={() => onDrop(i)}
                 onDragEnd={() => setDragIndex(null)}
+                style={{ cursor: 'pointer' }}
               >
                 {upcoming ? (
                   <span className="nd-qdrag" aria-hidden="true">

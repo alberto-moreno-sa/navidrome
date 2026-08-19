@@ -5,6 +5,7 @@ import Icon from '../common/Icon'
 import NdLove from '../common/NdLove'
 import PlayerExpanded from './PlayerExpanded'
 import { useAudioState } from '../common/useAudioState'
+import { useScrub } from '../common/useScrub'
 import { setPlayMode } from '../actions'
 
 const fmt = (s) => {
@@ -68,7 +69,13 @@ const PlayerBar = ({ onToggleQueue }) => {
   const song = current.song || {}
   const title = current.name || song.title || '—'
   const sub = [current.singer || song.artist, song.album].filter(Boolean).join(' — ')
-  const pct = tick.d ? (tick.t / tick.d) * 100 : 0
+  const [scrubFrac, onScrubDown] = useScrub((f) => {
+    const au = audioEl()
+    if (au && au.duration) au.currentTime = f * au.duration
+  })
+  const posFrac = scrubFrac != null ? scrubFrac : tick.d ? tick.t / tick.d : 0
+  const pct = posFrac * 100
+  const shownTime = scrubFrac != null ? scrubFrac * tick.d : tick.t
   const volPct = tick.muted ? 0 : Math.round((tick.vol ?? 1) * 100)
   const paused = optimPaused != null ? optimPaused : tick.paused
 
@@ -81,12 +88,6 @@ const PlayerBar = ({ onToggleQueue }) => {
   const shuffleOn = mode === 'shufflePlay'
   const repeatState = mode === 'singleLoop' ? 'one' : mode === 'orderLoop' ? 'all' : 'off'
 
-  const seek = (e) => {
-    const au = audioEl()
-    if (!au || !tick.d) return
-    const r = e.currentTarget.getBoundingClientRect()
-    au.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * tick.d
-  }
   const setVol = (e) => {
     const au = audioEl()
     if (!au) return
@@ -120,9 +121,16 @@ const PlayerBar = ({ onToggleQueue }) => {
   return (
     <>
       <footer className="nd-playerbar" ref={menuRef}>
-        <div className="nd-pbar" onClick={seek} role="slider" aria-label="Progress" tabIndex={-1}>
+        <div
+          className={`nd-pbar${scrubFrac != null ? ' scrubbing' : ''}`}
+          onMouseDown={onScrubDown}
+          role="slider"
+          aria-label="Progress"
+          tabIndex={-1}
+        >
           <div className="nd-pbuf" />
           <div className="nd-pfill" style={{ width: `${pct}%` }} />
+          <div className="nd-pthumb" style={{ left: `${pct}%` }} />
         </div>
         <div className="nd-pbody">
           <div className="nd-pnow">
@@ -143,7 +151,7 @@ const PlayerBar = ({ onToggleQueue }) => {
               <NdLove resource="song" record={song} size={18} />
             ) : null}
             <div className="nd-ptime">
-              <span className="a">{fmt(tick.t)}</span>
+              <span className="a">{fmt(shownTime)}</span>
               <span>—</span>
               <span className="b">{fmt(tick.d)}</span>
             </div>

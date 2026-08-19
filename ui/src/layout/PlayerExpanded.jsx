@@ -4,7 +4,8 @@ import Icon from '../common/Icon'
 import NdLove from '../common/NdLove'
 import NdStars from '../common/NdStars'
 import { useAudioState } from '../common/useAudioState'
-import { setPlayMode } from '../actions'
+import { useScrub } from '../common/useScrub'
+import { playTracks, setPlayMode } from '../actions'
 
 const fmt = (s) => {
   if (!s || Number.isNaN(s)) return '00:00'
@@ -54,7 +55,13 @@ const PlayerExpanded = ({ onClose }) => {
   const song = current.song || {}
   const title = current.name || song.title || '—'
   const sub = [current.singer || song.artist, song.album].filter(Boolean).join(' — ')
-  const pct = tick.d ? (tick.t / tick.d) * 100 : 0
+  const [scrubFrac, onScrubDown] = useScrub((f) => {
+    const au = audioEl()
+    if (au && au.duration) au.currentTime = f * au.duration
+  })
+  const posFrac = scrubFrac != null ? scrubFrac : tick.d ? tick.t / tick.d : 0
+  const pct = posFrac * 100
+  const shownTime = scrubFrac != null ? scrubFrac * tick.d : tick.t
   const paused = optimPaused != null ? optimPaused : tick.paused
   const shuffleOn = mode === 'shufflePlay'
   const repeatState = mode === 'singleLoop' ? 'one' : mode === 'orderLoop' ? 'all' : 'off'
@@ -68,15 +75,23 @@ const PlayerExpanded = ({ onClose }) => {
     const au = audioEl()
     if (au && typeof au.togglePlay === 'function') au.togglePlay()
   }
-  const seek = (e) => {
-    const au = audioEl()
-    if (!au || !tick.d) return
-    const r = e.currentTarget.getBoundingClientRect()
-    au.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * tick.d
-  }
   const toggleShuffle = () => dispatch(setPlayMode(shuffleOn ? 'order' : 'shufflePlay'))
   const cycleRepeat = () => dispatch(setPlayMode(REPEAT_NEXT[mode] || 'orderLoop'))
   const currentIndex = queue.findIndex((t) => t.uuid === currentUuid)
+
+  // Jump to a track in the queue: replay the same queue starting at the clicked
+  // item (the sanctioned playTracks path with a start id).
+  const jumpTo = (item) => {
+    const songs = queue.map((t) => t.song).filter(Boolean)
+    const keyed = {}
+    const ids = []
+    songs.forEach((s) => {
+      keyed[s.id] = s
+      ids.push(s.id)
+    })
+    const startId = (item.song && item.song.id) || item.trackId
+    if (ids.length) dispatch(playTracks(keyed, ids, startId))
+  }
 
   const khz = song.sampleRate ? `${Math.round((song.sampleRate / 1000) * 10) / 10} kHz` : null
   const channels = song.channels === 1 ? 'Mono' : song.channels === 2 ? 'Stereo' : song.channels ? `${song.channels} channels` : null
@@ -104,10 +119,17 @@ const PlayerExpanded = ({ onClose }) => {
             </div>
           ) : null}
           <div className="nd-fs-prog">
-            <div className="nd-fs-bar" onClick={seek} role="slider" aria-label="Progreso" tabIndex={-1}>
+            <div
+              className={`nd-fs-bar${scrubFrac != null ? ' scrubbing' : ''}`}
+              onMouseDown={onScrubDown}
+              role="slider"
+              aria-label="Progress"
+              tabIndex={-1}
+            >
               <div className="nd-fs-fill" style={{ width: `${pct}%` }} />
+              <div className="nd-fs-thumb" style={{ left: `${pct}%` }} />
             </div>
-            <div className="nd-fs-times"><span>{fmt(tick.t)}</span><span>{fmt(tick.d)}</span></div>
+            <div className="nd-fs-times"><span>{fmt(shownTime)}</span><span>{fmt(tick.d)}</span></div>
           </div>
           <div className="nd-fs-transport">
             <button className={shuffleOn ? 'on' : ''} aria-label="Shuffle" aria-pressed={shuffleOn} onClick={toggleShuffle} type="button"><Icon name="shuffle" size={22} /></button>
@@ -144,13 +166,18 @@ const PlayerExpanded = ({ onClose }) => {
                 {queue.map((t, i) => {
                   const zone = currentIndex < 0 ? '' : i < currentIndex ? ' done' : i === currentIndex ? ' on' : ''
                   return (
-                    <div className={`nd-qrow${zone}`} key={t.uuid || i}>
+                    <button
+                      className={`nd-qrow${zone}`}
+                      key={t.uuid || i}
+                      onClick={() => jumpTo(t)}
+                      type="button"
+                    >
                       <span className="th">{t.cover ? <img src={t.cover} alt="" /> : null}</span>
                       <div className="lines">
                         <div className="t nd-trunc">{t.name || t.title}</div>
                         <div className="s nd-trunc">{t.singer || t.artist || ''}</div>
                       </div>
-                    </div>
+                    </button>
                   )
                 })}
               </div>
