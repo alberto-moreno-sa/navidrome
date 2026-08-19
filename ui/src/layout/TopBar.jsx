@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { useLogout, useTranslate } from 'react-admin'
-import { changeTheme } from '../../actions'
-import { AUTO_THEME_ID } from '../../consts'
-import Icon from '../components/Icon'
+import { changeTheme } from '../actions'
+import { AUTO_THEME_ID } from '../consts'
+import Icon from '../common/Icon'
 
 // Top bar: wordmark, history nav, primary nav (Discover/Library), global search,
 // and the account menu. Data actions (theme, logout, navigation) reuse the
@@ -43,7 +43,7 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
       onClick={() => dispatch(changeTheme(value))}
       type="button"
     >
-      <Icon name={icon} className="av-icon" />
+      <Icon name={icon} className="nd-icon" />
       {label}
     </button>
   )
@@ -54,44 +54,44 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
   }
 
   return (
-    <header className="av-topbar">
-      <div className="av-tb-left">
-        <div className="av-logo">
+    <header className="nd-topbar">
+      <div className="nd-tb-left">
+        <div className="nd-logo">
           navidrom<span>e</span>
         </div>
-        <div className="av-histnav">
+        <div className="nd-histnav">
           <button
-            className="av-circ"
+            className="nd-circ"
             aria-label={translate('ra.action.back', { _: 'Atrás' })}
             onClick={() => history.goBack()}
             type="button"
           >
-            <Icon name="back" className="av-icon" />
+            <Icon name="back" className="nd-icon" />
           </button>
           <button
-            className="av-circ"
+            className="nd-circ"
             aria-label="Adelante"
             onClick={() => history.goForward()}
             type="button"
           >
-            <Icon name="forward" className="av-icon" />
+            <Icon name="forward" className="nd-icon" />
           </button>
         </div>
-        <nav className="av-nav" aria-label="Primary">
+        <nav className="nd-nav" aria-label="Primary">
           <NavLink to="/" exact activeClassName="on">
-            <Icon name="discover" className="av-icon" />
+            <Icon name="discover" className="nd-icon" />
             Descubrir
           </NavLink>
           <NavLink to="/album" activeClassName="on">
-            <Icon name="library" className="av-icon" />
+            <Icon name="library" className="nd-icon" />
             Biblioteca
           </NavLink>
         </nav>
       </div>
 
-      <div className="av-tb-right">
-        <div className="av-search">
-          <Icon name="search" className="av-icon" />
+      <div className="nd-tb-right">
+        <div className="nd-search">
+          <Icon name="search" className="nd-icon" />
           <input
             placeholder={translate('ra.action.search', { _: 'Búsqueda' })}
             aria-label="Búsqueda"
@@ -101,18 +101,18 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
         </div>
 
         <button
-          className="av-circ"
+          className="nd-circ"
           aria-label="Cola de reproducción"
           aria-pressed={!!queueOpen}
           onClick={() => onToggleQueue && onToggleQueue()}
           type="button"
         >
-          <Icon name="queue" className="av-icon" />
+          <Icon name="queue" className="nd-icon" />
         </button>
 
         <div style={{ position: 'relative' }} ref={menuRef}>
           <button
-            className="av-avatar"
+            className="nd-avatar"
             aria-label="Cuenta"
             aria-haspopup="menu"
             aria-expanded={menuOpen}
@@ -123,33 +123,33 @@ const TopBar = ({ search, onSearch, queueOpen, onToggleQueue }) => {
           </button>
 
           {menuOpen && (
-            <div className="av-menu" role="menu">
-              <div className="av-menu-id">
+            <div className="nd-menu" role="menu">
+              <div className="nd-menu-id">
                 <b>{username}</b>
                 <i>{isAdmin ? 'Admin' : 'Studio'}</i>
               </div>
-              <div className="av-menu-sec">
+              <div className="nd-menu-sec">
                 <h5>
-                  <Icon name="sparkle" className="av-icon" />
+                  <Icon name="sparkle" className="nd-icon" />
                   Aspecto
                 </h5>
-                <div className="av-seg">
+                <div className="nd-seg">
                   {themeBtn('Claro', 'sun', 'LightTheme')}
                   {themeBtn('Oscuro', 'moon', 'DarkTheme')}
                   {themeBtn('Sistema', 'system', AUTO_THEME_ID)}
                 </div>
               </div>
-              <div className="av-menu-list">
+              <div className="nd-menu-list">
                 <button type="button" onClick={() => go('/personal')}>
-                  <Icon name="account" className="av-icon" />
+                  <Icon name="account" className="nd-icon" />
                   Cuenta
                 </button>
                 <button type="button" onClick={() => go('/personal')}>
-                  <Icon name="settings" className="av-icon" />
+                  <Icon name="settings" className="nd-icon" />
                   Ajustes
                 </button>
                 <button type="button" className="sep" onClick={() => logout()}>
-                  <Icon name="logout" className="av-icon" />
+                  <Icon name="logout" className="nd-icon" />
                   Cerrar sesión
                 </button>
               </div>

@@ -1,40 +1,36 @@
-import React, { useCallback } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Layout as RALayout, toggleSidebar } from 'react-admin'
-import { makeStyles } from '@material-ui/core/styles'
-import { HotKeys } from 'react-hotkeys'
-import Menu from './Menu'
-import AppBar from './AppBar'
+import React, { useState } from 'react'
 import Notification from './Notification'
-import useCurrentTheme from '../themes/useCurrentTheme'
-import { useSearchRefocus } from '../common'
+import { Dialogs } from '../dialogs/Dialogs'
+import TopBar from './TopBar'
+import QueueDrawer from './QueueDrawer'
+import '../themes/redesign.css'
 
-const useStyles = makeStyles({
-  root: { paddingBottom: (props) => (props.addPadding ? '80px' : 0) },
-})
-
-const Layout = (props) => {
-  const theme = useCurrentTheme()
-  const queue = useSelector((state) => state.player?.queue)
-  const classes = useStyles({ addPadding: queue.length > 0 })
-  const dispatch = useDispatch()
-  useSearchRefocus()
-
-  const keyHandlers = {
-    TOGGLE_MENU: useCallback(() => dispatch(toggleSidebar()), [dispatch]),
-  }
+// App shell: three grid rows (top bar, scroll region, player) with the queue
+// drawer docked right. react-admin's route content arrives as `children` and
+// renders in the scroll region. The music player still mounts globally from
+// App.jsx (fixed, bottom) until the bespoke player replaces it.
+const Layout = ({ children }) => {
+  const [queueOpen, setQueueOpen] = useState(false)
+  const [search, setSearch] = useState('')
 
   return (
-    <HotKeys handlers={keyHandlers}>
-      <RALayout
-        {...props}
-        className={classes.root}
-        menu={Menu}
-        appBar={AppBar}
-        theme={theme}
-        notification={Notification}
+    <div className="nd-app">
+      <TopBar
+        search={search}
+        onSearch={setSearch}
+        queueOpen={queueOpen}
+        onToggleQueue={() => setQueueOpen((o) => !o)}
       />
-    </HotKeys>
+      <div className="nd-mid">
+        <main className="nd-scroll" aria-label="Contenido principal">
+          {children}
+        </main>
+        <QueueDrawer open={queueOpen} />
+      </div>
+      <div className="nd-player" aria-hidden="true" />
+      <Notification />
+      <Dialogs />
+    </div>
   )
 }
 

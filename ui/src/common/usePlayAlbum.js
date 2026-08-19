@@ -1,6 +1,6 @@
 import { useDataProvider } from 'react-admin'
 import { useDispatch } from 'react-redux'
-import { playTracks } from '../../actions'
+import { playTracks } from '../actions'
 
 // Play a whole album: fetch its songs through the fork's dataProvider (native
 // /api), then dispatch the existing playTracks action. No new data path.

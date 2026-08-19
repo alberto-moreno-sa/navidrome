@@ -1,4 +1,4 @@
-import subsonic from '../../subsonic'
+import subsonic from '../subsonic'
 
 // Cover art URL from the fork's Subsonic client. `record` is any album/artist/
 // song with an id; size is the square px requested from getCoverArt.

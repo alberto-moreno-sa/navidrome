@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useGetList } from 'react-admin'
 import { Link } from 'react-router-dom'
-import Icon from '../components/Icon'
-import Rail from '../components/Rail'
-import Section from '../components/Section'
-import AlbumCard from '../components/AlbumCard'
-import { coverUrl, resolution } from '../components/covers'
-import { usePlayAlbum } from '../components/usePlayAlbum'
+import Icon from '../common/Icon'
+import Rail from '../common/Rail'
+import Section from '../common/Section'
+import AlbumCard from '../common/AlbumCard'
+import { coverUrl, resolution } from '../common/covers'
+import { usePlayAlbum } from '../common/usePlayAlbum'
 
 const GENRE_COLORS = [
   '#B4711F', '#A5401F', '#8E8B4A', '#B49A6A', '#5B3A9B', '#8E2F52', '#3A3A3A',
@@ -44,7 +44,7 @@ const AlbumRailSection = ({
         ))}
       </Rail>
       {!loading && records.length === 0 ? (
-        <div className="av-empty">Nada por aquí todavía.</div>
+        <div className="nd-empty">Nada por aquí todavía.</div>
       ) : null}
     </Section>
   )
@@ -68,25 +68,25 @@ const ListsSection = () => {
     >
       <Rail variant="dense">
         {records.map((pl) => (
-          <Link className="av-card" to={`/playlist/${pl.id}/show`} key={pl.id}>
-            <div className="av-art">
+          <Link className="nd-card" to={`/playlist/${pl.id}/show`} key={pl.id}>
+            <div className="nd-art">
               {coverUrl(pl, 300) ? <img src={coverUrl(pl, 300)} alt="" loading="lazy" /> : null}
-              <span className="av-flag ghost">Lista</span>
-              <div className="av-scrim">
-                <span className="av-play"><Icon name="play" size={16} /></span>
+              <span className="nd-flag ghost">Lista</span>
+              <div className="nd-scrim">
+                <span className="nd-play"><Icon name="play" size={16} /></span>
               </div>
             </div>
-            <div className="av-meta">
+            <div className="nd-meta">
               <div className="lines">
-                <div className="t av-trunc">{pl.name}</div>
-                <div className="s tag av-trunc">{pl.ownerName ? `De ${pl.ownerName}` : 'Lista'}</div>
+                <div className="t nd-trunc">{pl.name}</div>
+                <div className="s tag nd-trunc">{pl.ownerName ? `De ${pl.ownerName}` : 'Lista'}</div>
               </div>
             </div>
           </Link>
         ))}
       </Rail>
       {!loading && records.length === 0 ? (
-        <div className="av-empty">Aún no tienes listas.</div>
+        <div className="nd-empty">Aún no tienes listas.</div>
       ) : null}
     </Section>
   )
@@ -108,33 +108,33 @@ const RankSection = () => {
       <div>
         <Rail variant="wide">
           {heroes.map((a, i) => (
-            <button className="av-hero" key={a.id} onClick={() => play(a.id)} type="button">
+            <button className="nd-hero" key={a.id} onClick={() => play(a.id)} type="button">
               <span className="n">{i + 1}</span>
-              <div className="av-art">
+              <div className="nd-art">
                 {coverUrl(a, 400) ? <img src={coverUrl(a, 400)} alt="" loading="lazy" /> : null}
               </div>
               <div className="info">
-                <b className="av-trunc">{a.name}</b>
-                <span className="av-trunc">{a.albumArtist || a.artist}</span>
-                {resolution(a) ? <span className="av-res">{resolution(a)}</span> : null}
+                <b className="nd-trunc">{a.name}</b>
+                <span className="nd-trunc">{a.albumArtist || a.artist}</span>
+                {resolution(a) ? <span className="nd-res">{resolution(a)}</span> : null}
               </div>
             </button>
           ))}
         </Rail>
-        {rows.length ? <div className="av-divider" /> : null}
+        {rows.length ? <div className="nd-divider" /> : null}
         <Rail variant="wide">
           {rows.map((a, i) => (
-            <button className="av-row" key={a.id} onClick={() => play(a.id)} type="button">
+            <button className="nd-row" key={a.id} onClick={() => play(a.id)} type="button">
               <span className="n">{i + 4}</span>
-              <div className="av-art">
+              <div className="nd-art">
                 {coverUrl(a, 120) ? <img src={coverUrl(a, 120)} alt="" loading="lazy" /> : null}
               </div>
               <div className="lines">
-                <div className="t av-trunc">{a.name}</div>
-                <div className="s av-trunc">{a.albumArtist || a.artist}</div>
+                <div className="t nd-trunc">{a.name}</div>
+                <div className="s nd-trunc">{a.albumArtist || a.artist}</div>
               </div>
-              {resolution(a) ? <span className="av-res">{resolution(a)}</span> : null}
-              <span className="av-kebab"><Icon name="kebab" size={18} /></span>
+              {resolution(a) ? <span className="nd-res">{resolution(a)}</span> : null}
+              <span className="nd-kebab"><Icon name="kebab" size={18} /></span>
             </button>
           ))}
         </Rail>
@@ -165,18 +165,18 @@ const GenreFilter = () => {
 
   return (
     <div style={{ position: 'relative' }} ref={ref}>
-      <button className="av-btn" onClick={() => setOpen((o) => !o)} type="button" aria-expanded={open}>
-        <Icon name="filter" className="av-icon" />
+      <button className="nd-btn" onClick={() => setOpen((o) => !o)} type="button" aria-expanded={open}>
+        <Icon name="filter" className="nd-icon" />
         Filtrar por género
       </button>
       {open ? (
-        <div className="av-pop">
-          <h4><Icon name="sliders" className="av-icon" />Filtrar por género</h4>
-          <div className="av-genres">
+        <div className="nd-pop">
+          <h4><Icon name="sliders" className="nd-icon" />Filtrar por género</h4>
+          <div className="nd-genres">
             {genres.map((g, i) => (
               <button
                 key={g.id}
-                className={`av-genre${selected[g.id] ? ' on' : ''}`}
+                className={`nd-genre${selected[g.id] ? ' on' : ''}`}
                 style={{ background: GENRE_COLORS[i % GENRE_COLORS.length] }}
                 onClick={() => setSelected((s) => ({ ...s, [g.id]: !s[g.id] }))}
                 type="button"
@@ -192,8 +192,8 @@ const GenreFilter = () => {
 }
 
 const Discover = () => (
-  <div className="av-content">
-    <div className="av-page-head">
+  <div className="nd-content">
+    <div className="nd-page-head">
       <h1>Descubrir</h1>
       <GenreFilter />
     </div>

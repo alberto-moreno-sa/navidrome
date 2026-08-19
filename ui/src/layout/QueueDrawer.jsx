@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import Icon from '../components/Icon'
+import Icon from '../common/Icon'
 
 // Right-docked queue drawer. Reads the real player queue from redux
 // (state.player). Three visual zones: played (dimmed), current
@@ -25,57 +25,57 @@ const QueueDrawer = ({ open }) => {
 
   return (
     <aside
-      className={`av-queue${open ? ' open' : ''}`}
+      className={`nd-queue${open ? ' open' : ''}`}
       aria-label="Cola de reproducción"
       aria-hidden={!open}
     >
-      <div className="av-qhead">
+      <div className="nd-qhead">
         <button
-          className={`av-qtab${tab === 'queue' ? ' on' : ''}`}
+          className={`nd-qtab${tab === 'queue' ? ' on' : ''}`}
           onClick={() => setTab('queue')}
           type="button"
         >
-          <Icon name="queue" className="av-icon" />
+          <Icon name="queue" className="nd-icon" />
           Cola
         </button>
         <button
-          className={`av-qtab${tab === 'history' ? ' on' : ''}`}
+          className={`nd-qtab${tab === 'history' ? ' on' : ''}`}
           onClick={() => setTab('history')}
           type="button"
         >
-          <Icon name="history" className="av-icon" />
+          <Icon name="history" className="nd-icon" />
           Historial
         </button>
       </div>
 
-      <div className="av-qlist">
+      <div className="nd-qlist">
         {rows.length === 0 ? (
-          <div className="av-empty">
+          <div className="nd-empty">
             {tab === 'queue'
               ? 'La cola está vacía. Elige algo para reproducir.'
               : 'Aún no hay historial.'}
           </div>
         ) : (
           rows.map((t, i) => (
-            <button className={`av-qrow${zoneOf(i)}`} key={t.uuid || i} type="button">
+            <button className={`nd-qrow${zoneOf(i)}`} key={t.uuid || i} type="button">
               <span className="th">
                 {t.cover ? <img src={t.cover} alt="" /> : null}
               </span>
               <div className="lines">
-                <div className="t av-trunc">{t.name || t.title || '—'}</div>
-                <div className="s av-trunc">{t.singer || t.artist || ''}</div>
+                <div className="t nd-trunc">{t.name || t.title || '—'}</div>
+                <div className="s nd-trunc">{t.singer || t.artist || ''}</div>
               </div>
-              <span className="av-kebab" style={{ opacity: 1 }}>
-                <Icon name="kebab" className="av-icon" />
+              <span className="nd-kebab" style={{ opacity: 1 }}>
+                <Icon name="kebab" className="nd-icon" />
               </span>
             </button>
           ))
         )}
       </div>
 
-      <div className="av-qfoot">
+      <div className="nd-qfoot">
         <button
-          className={`av-sw${autoplay ? ' on' : ''}`}
+          className={`nd-sw${autoplay ? ' on' : ''}`}
           role="switch"
           aria-checked={autoplay}
           aria-label="Lectura automática"

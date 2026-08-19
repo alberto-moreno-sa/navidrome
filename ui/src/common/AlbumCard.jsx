@@ -16,30 +16,30 @@ const AlbumCard = ({ record, flag, ghostFlag, lg, tag }) => {
 
   return (
     <button
-      className={`av-card${lg ? ' lg' : ''}`}
+      className={`nd-card${lg ? ' lg' : ''}`}
       onClick={() => play(record.id)}
       aria-label={`Reproducir ${title}`}
       type="button"
     >
-      <div className="av-art">
+      <div className="nd-art">
         {cover ? <img src={cover} alt="" loading="lazy" /> : null}
-        {flag ? <span className="av-flag">{flag}</span> : null}
-        {ghostFlag ? <span className="av-flag ghost">{ghostFlag}</span> : null}
-        <div className="av-scrim">
-          <span className="av-play">
+        {flag ? <span className="nd-flag">{flag}</span> : null}
+        {ghostFlag ? <span className="nd-flag ghost">{ghostFlag}</span> : null}
+        <div className="nd-scrim">
+          <span className="nd-play">
             <Icon name="play" size={16} />
           </span>
         </div>
       </div>
-      <div className="av-meta">
+      <div className="nd-meta">
         <div className="lines">
-          <div className="t av-trunc">{title}</div>
-          <div className={`s av-trunc${tag ? ' tag' : ''}`}>
-            {record.explicit ? <span className="av-exp">E</span> : null}
+          <div className="t nd-trunc">{title}</div>
+          <div className={`s nd-trunc${tag ? ' tag' : ''}`}>
+            {record.explicit ? <span className="nd-exp">E</span> : null}
             {tag || subtitle}
           </div>
         </div>
-        {res ? <span className="av-res">{res}</span> : null}
+        {res ? <span className="nd-res">{res}</span> : null}
       </div>
     </button>
   )
