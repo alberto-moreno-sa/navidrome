@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Icon from '../common/Icon'
+import PlayerExpanded from './PlayerExpanded'
 
 const fmt = (s) => {
   if (!s || Number.isNaN(s)) return '00:00'
@@ -20,6 +21,7 @@ const PlayerBar = ({ onToggleQueue }) => {
   const current = playerState?.current || {}
   const queueLen = playerState?.queue?.length || 0
   const [tick, setTick] = useState({ t: 0, d: 0, paused: true, vol: 1 })
+  const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -56,49 +58,60 @@ const PlayerBar = ({ onToggleQueue }) => {
   }
 
   return (
-    <footer className="nd-playerbar">
-      <div className="nd-pbar" onClick={seek} role="slider" aria-label="Progreso" tabIndex={-1}>
-        <div className="nd-pbuf" />
-        <div className="nd-pfill" style={{ width: `${pct}%` }} />
-      </div>
-      <div className="nd-pbody">
-        <div className="nd-pnow">
-          <div className="nd-pcover">{current.cover ? <img src={current.cover} alt="" /> : null}</div>
-          <div className="nd-ptxt">
-            <div className="t nd-trunc">{title}</div>
-            <div className="s nd-trunc">{sub}</div>
-          </div>
-          <div className="nd-ptime">
-            <span className="a">{fmt(tick.t)}</span>
-            <span>—</span>
-            <span className="b">{fmt(tick.d)}</span>
-          </div>
+    <>
+      <footer className="nd-playerbar">
+        <div className="nd-pbar" onClick={seek} role="slider" aria-label="Progreso" tabIndex={-1}>
+          <div className="nd-pbuf" />
+          <div className="nd-pfill" style={{ width: `${pct}%` }} />
         </div>
-
-        <div className="nd-ptransport">
-          <button aria-label="Aleatorio" type="button"><Icon name="shuffle" size={20} /></button>
-          <button aria-label="Anterior" onClick={call('playPrev')} type="button"><Icon name="prev" size={20} /></button>
-          <button className="main" aria-label={tick.paused ? 'Reproducir' : 'Pausar'} onClick={call('togglePlay')} type="button">
-            <Icon name={tick.paused ? 'play' : 'pause'} size={26} />
-          </button>
-          <button aria-label="Siguiente" onClick={call('playNext')} type="button"><Icon name="next" size={20} /></button>
-          <button aria-label="Repetir" type="button"><Icon name="repeat" size={20} /></button>
-        </div>
-
-        <div className="nd-pright">
-          <div className="nd-pvol">
-            <Icon name="volume" size={18} />
-            <div className="nd-voltrack" onClick={setVol} role="slider" aria-label="Volumen" tabIndex={-1}>
-              <div className="nd-volfill" style={{ width: `${volPct}%` }} />
+        <div className="nd-pbody">
+          <div className="nd-pnow">
+            <button
+              className="nd-pcover"
+              onClick={() => setExpanded(true)}
+              aria-label="Abrir reproductor"
+              type="button"
+              style={{ padding: 0, cursor: 'pointer', border: 0 }}
+            >
+              {current.cover ? <img src={current.cover} alt="" /> : null}
+            </button>
+            <div className="nd-ptxt">
+              <div className="t nd-trunc">{title}</div>
+              <div className="s nd-trunc">{sub}</div>
+            </div>
+            <div className="nd-ptime">
+              <span className="a">{fmt(tick.t)}</span>
+              <span>—</span>
+              <span className="b">{fmt(tick.d)}</span>
             </div>
           </div>
-          <button className="nd-pqueue" aria-label="Cola de reproducción" onClick={onToggleQueue} type="button">
-            <Icon name="queue" size={18} />
-            {queueLen > 0 ? <span className="nd-pcount">{queueLen}</span> : null}
-          </button>
+
+          <div className="nd-ptransport">
+            <button aria-label="Aleatorio" type="button"><Icon name="shuffle" size={20} /></button>
+            <button aria-label="Anterior" onClick={call('playPrev')} type="button"><Icon name="prev" size={20} /></button>
+            <button className="main" aria-label={tick.paused ? 'Reproducir' : 'Pausar'} onClick={call('togglePlay')} type="button">
+              <Icon name={tick.paused ? 'play' : 'pause'} size={26} />
+            </button>
+            <button aria-label="Siguiente" onClick={call('playNext')} type="button"><Icon name="next" size={20} /></button>
+            <button aria-label="Repetir" type="button"><Icon name="repeat" size={20} /></button>
+          </div>
+
+          <div className="nd-pright">
+            <div className="nd-pvol">
+              <Icon name="volume" size={18} />
+              <div className="nd-voltrack" onClick={setVol} role="slider" aria-label="Volumen" tabIndex={-1}>
+                <div className="nd-volfill" style={{ width: `${volPct}%` }} />
+              </div>
+            </div>
+            <button className="nd-pqueue" aria-label="Cola de reproducción" onClick={onToggleQueue} type="button">
+              <Icon name="queue" size={18} />
+              {queueLen > 0 ? <span className="nd-pcount">{queueLen}</span> : null}
+            </button>
+          </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+      {expanded ? <PlayerExpanded onClose={() => setExpanded(false)} /> : null}
+    </>
   )
 }
 
