@@ -1,7 +1,8 @@
 import React from 'react'
 import Icon from './Icon'
 import NdLove from './NdLove'
-import { coverUrl, resolution } from './covers'
+import { coverUrl } from './covers'
+import { useAlbumResolution } from './useAlbumResolution'
 import { usePlayAlbum } from './usePlayAlbum'
 
 // Dense/featured album card. Clicking the card plays the item; the scrim/play
@@ -10,8 +11,8 @@ import { usePlayAlbum } from './usePlayAlbum'
 // interactive elements). The resolution chip sits in the meta row.
 const AlbumCard = ({ record, flag, ghostFlag, lg, tag, resource = 'album' }) => {
   const play = usePlayAlbum()
+  const res = useAlbumResolution(record, resource === 'album')
   if (!record) return null
-  const res = resolution(record)
   const cover = coverUrl(record, lg ? 400 : 300)
   const title = record.name || record.title || '—'
   const subtitle = record.albumArtist || record.artist || ''
