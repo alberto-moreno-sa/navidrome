@@ -834,3 +834,17 @@
 /* Queue rows as buttons (jump to track) */
 button.nd-qrow { width: 100%; border: 0; background: transparent; font: inherit; text-align: left; cursor: pointer; }
 button.nd-qrow:hover { background: var(--surface); }
+
+/* ── List row: whole main area clickable + play overlay ── */
+.nd-listrow-main {
+  display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0;
+  border: 0; background: transparent; padding: 0; margin: 0; font: inherit;
+  color: inherit; text-align: left; cursor: pointer; text-decoration: none;
+}
+.nd-listrow .th { position: relative; }
+.nd-listrow-play {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  background: var(--surface-overlay); color: #fff; opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.nd-listrow:hover button.nd-listrow-main .nd-listrow-play { opacity: 1; }

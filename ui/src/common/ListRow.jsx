@@ -4,11 +4,11 @@ import Icon from './Icon'
 import NdLove from './NdLove'
 import { coverUrl, resolution } from './covers'
 
-// Library list-view row (height 58). Thumbnail 44, title 14/600, a metadata
-// line joining type and artist with a bullet, and a right-aligned action
-// cluster (resolution chip, favorite, info, kebab). The row highlights on hover.
-// When `resource` is provided the favorite is wired to the data layer directly;
-// otherwise it falls back to the passed `onToggleLove`/`loved` props.
+// Library list-view row (height 58). The whole main area (thumbnail + title) is
+// one clickable target: it plays when `onPlay` is given (song/album/playlist),
+// otherwise it navigates via `to` (artist). The action cluster (resolution
+// chip, favorite, info, more) stays separate so those controls don't trigger
+// playback. When `resource` is provided the favorite is wired to the data layer.
 const ListRow = ({ record, type, to, onPlay, loved, onToggleLove, resource }) => {
   if (!record) return null
   const title = record.name || record.title || '—'
@@ -17,18 +17,34 @@ const ListRow = ({ record, type, to, onPlay, loved, onToggleLove, resource }) =>
   const meta = [type, artist].filter(Boolean).join(' • ')
   const cover = coverUrl(record, 80)
 
-  const Wrapper = to ? Link : 'div'
-  const wrapperProps = to ? { to } : {}
-
-  return (
-    <div className="nd-listrow">
-      <Wrapper {...wrapperProps} className="th" onClick={onPlay} style={{ display: 'block' }}>
+  const inner = (
+    <>
+      <span className="th">
         {cover ? <img src={cover} alt="" loading="lazy" /> : null}
-      </Wrapper>
+        <span className="nd-listrow-play">
+          <Icon name="play" size={16} />
+        </span>
+      </span>
       <div className="lines">
         <div className="t nd-trunc">{title}</div>
         <div className="s nd-trunc">{meta}</div>
       </div>
+    </>
+  )
+
+  return (
+    <div className="nd-listrow">
+      {onPlay ? (
+        <button className="nd-listrow-main" onClick={onPlay} aria-label={`Play ${title}`} type="button">
+          {inner}
+        </button>
+      ) : to ? (
+        <Link className="nd-listrow-main" to={to}>
+          {inner}
+        </Link>
+      ) : (
+        <div className="nd-listrow-main">{inner}</div>
+      )}
       <div className="acts">
         {res ? <span className="nd-res">{res}</span> : null}
         {resource ? (
@@ -44,9 +60,15 @@ const ListRow = ({ record, type, to, onPlay, loved, onToggleLove, resource }) =>
             <Icon name={loved ? 'heartFilled' : 'heart'} size={18} fill={loved} />
           </button>
         ) : null}
-        <button aria-label="Information" type="button" style={{ display: 'grid', placeItems: 'center' }}>
-          <Icon name="info" size={18} />
-        </button>
+        {to ? (
+          <Link to={to} aria-label="Details" style={{ display: 'grid', placeItems: 'center', color: 'inherit' }}>
+            <Icon name="info" size={18} />
+          </Link>
+        ) : (
+          <button aria-label="Information" type="button" style={{ display: 'grid', placeItems: 'center' }}>
+            <Icon name="info" size={18} />
+          </button>
+        )}
         <button aria-label="More" type="button" style={{ display: 'grid', placeItems: 'center' }}>
           <Icon name="kebab" size={18} />
         </button>
