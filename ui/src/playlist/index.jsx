@@ -5,13 +5,13 @@ import DynamicMenuIcon from '../layout/DynamicMenuIcon'
 import PlaylistList from './PlaylistList'
 import PlaylistEdit from './PlaylistEdit'
 import PlaylistCreate from './PlaylistCreate'
-import PlaylistShow from './PlaylistShow'
+import PlaylistPage from './PlaylistPage'
 
 export default {
   list: PlaylistList,
   create: PlaylistCreate,
   edit: PlaylistEdit,
-  show: PlaylistShow,
+  show: PlaylistPage,
   icon: (
     <DynamicMenuIcon
       path={'playlist'}
