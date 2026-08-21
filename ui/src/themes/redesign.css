@@ -503,6 +503,7 @@
 .nd-fs-times { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
 .nd-fs-transport { display: flex; align-items: center; gap: 30px; color: var(--text-strong); }
 .nd-fs-transport .main { color: #fff; }
+.nd-fs-transport button.on { color: var(--accent); }
 .nd-fs-right { display: flex; flex-direction: column; min-height: 0; }
 .nd-fs-qtitle { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 12px; }
 .nd-fs-qlist { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }

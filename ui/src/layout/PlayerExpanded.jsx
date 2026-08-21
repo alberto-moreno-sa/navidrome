@@ -5,14 +5,14 @@ import NdLove from '../common/NdLove'
 import NdStars from '../common/NdStars'
 import { useAudioState } from '../common/useAudioState'
 import { useScrub } from '../common/useScrub'
-import { playTracks, setPlayMode } from '../actions'
+import { usePlayMode } from '../common/usePlayMode'
+import { playTracks } from '../actions'
 
 const fmt = (s) => {
   if (!s || Number.isNaN(s)) return '00:00'
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 }
 const audioEl = () => (typeof document !== 'undefined' ? document.querySelector('audio') : null)
-const REPEAT_NEXT = { order: 'orderLoop', orderLoop: 'singleLoop', singleLoop: 'order', shufflePlay: 'orderLoop' }
 
 const Row = ({ label, value }) =>
   value == null || value === '' ? null : (
@@ -30,7 +30,7 @@ const PlayerExpanded = ({ onClose }) => {
   const dispatch = useDispatch()
   const current = playerState?.current || {}
   const queue = playerState?.queue || []
-  const mode = playerState?.mode || 'order'
+  const { shuffleOn, repeatState, toggleShuffle, cycleRepeat } = usePlayMode()
   const currentUuid = current.uuid
   const [tab, setTab] = useState('desc')
   const [autoplay, setAutoplay] = useState(true)
@@ -63,8 +63,6 @@ const PlayerExpanded = ({ onClose }) => {
   const pct = posFrac * 100
   const shownTime = scrubFrac != null ? scrubFrac * tick.d : tick.t
   const paused = optimPaused != null ? optimPaused : tick.paused
-  const shuffleOn = mode === 'shufflePlay'
-  const repeatState = mode === 'singleLoop' ? 'one' : mode === 'orderLoop' ? 'all' : 'off'
 
   const call = (fn) => () => {
     const au = audioEl()
@@ -75,8 +73,6 @@ const PlayerExpanded = ({ onClose }) => {
     const au = audioEl()
     if (au && typeof au.togglePlay === 'function') au.togglePlay()
   }
-  const toggleShuffle = () => dispatch(setPlayMode(shuffleOn ? 'order' : 'shufflePlay'))
-  const cycleRepeat = () => dispatch(setPlayMode(REPEAT_NEXT[mode] || 'orderLoop'))
   const currentIndex = queue.findIndex((t) => t.uuid === currentUuid)
 
   // Jump to a track in the queue: replay the same queue starting at the clicked

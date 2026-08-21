@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 import Icon from '../common/Icon'
 import NdLove from '../common/NdLove'
 import PlayerExpanded from './PlayerExpanded'
 import { useAudioState } from '../common/useAudioState'
 import { useScrub } from '../common/useScrub'
-import { setPlayMode } from '../actions'
+import { usePlayMode } from '../common/usePlayMode'
 
 const fmt = (s) => {
   if (!s || Number.isNaN(s)) return '00:00'
@@ -22,17 +22,12 @@ const fmt = (s) => {
 // and repeat are driven through the engine's playMode (redux player.mode).
 const audioEl = () => (typeof document !== 'undefined' ? document.querySelector('audio') : null)
 
-// Repeat cycles order → repeat-all → repeat-one; shuffle toggles the shuffle
-// mode. Both map onto the single engine playMode.
-const REPEAT_NEXT = { order: 'orderLoop', orderLoop: 'singleLoop', singleLoop: 'order', shufflePlay: 'orderLoop' }
-
 const PlayerBar = ({ onToggleQueue }) => {
   const playerState = useSelector((s) => s.player)
-  const dispatch = useDispatch()
   const history = useHistory()
   const current = playerState?.current || {}
   const queueLen = playerState?.queue?.length || 0
-  const mode = playerState?.mode || 'order'
+  const { shuffleOn, repeatState, toggleShuffle, cycleRepeat } = usePlayMode()
   const tick = useAudioState()
   const [expanded, setExpanded] = useState(false)
   const [menu, setMenu] = useState(null) // 'quality' | 'output' | 'kebab' | null
@@ -64,15 +59,16 @@ const PlayerBar = ({ onToggleQueue }) => {
     }
   }, [menu])
 
+  const [scrubFrac, onScrubDown] = useScrub((f) => {
+    const au = audioEl()
+    if (au && au.duration) au.currentTime = f * au.duration
+  })
+
   if (queueLen === 0) return <div className="nd-player" aria-hidden="true" />
 
   const song = current.song || {}
   const title = current.name || song.title || '—'
   const sub = [current.singer || song.artist, song.album].filter(Boolean).join(' — ')
-  const [scrubFrac, onScrubDown] = useScrub((f) => {
-    const au = audioEl()
-    if (au && au.duration) au.currentTime = f * au.duration
-  })
   const posFrac = scrubFrac != null ? scrubFrac : tick.d ? tick.t / tick.d : 0
   const pct = posFrac * 100
   const shownTime = scrubFrac != null ? scrubFrac * tick.d : tick.t
@@ -84,9 +80,6 @@ const PlayerBar = ({ onToggleQueue }) => {
     const au = audioEl()
     if (au && typeof au.togglePlay === 'function') au.togglePlay()
   }
-
-  const shuffleOn = mode === 'shufflePlay'
-  const repeatState = mode === 'singleLoop' ? 'one' : mode === 'orderLoop' ? 'all' : 'off'
 
   const setVol = (e) => {
     const au = audioEl()
@@ -103,8 +96,6 @@ const PlayerBar = ({ onToggleQueue }) => {
     const au = audioEl()
     if (au) au.muted = !au.muted
   }
-  const toggleShuffle = () => dispatch(setPlayMode(shuffleOn ? 'order' : 'shufflePlay'))
-  const cycleRepeat = () => dispatch(setPlayMode(REPEAT_NEXT[mode] || 'orderLoop'))
   const goto = (path) => {
     setMenu(null)
     if (path) history.push(path)
