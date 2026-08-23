@@ -1,6 +1,7 @@
 import { useDataProvider } from 'react-admin'
 import { useDispatch } from 'react-redux'
 import { playTracks, setTrack } from '../actions'
+import { clearShuffleContext } from './shuffleContext'
 import { songFromRadio } from '../radio/helper'
 
 const keyById = (rows) => {
@@ -19,6 +20,7 @@ export const usePlayPlaylist = () => {
   const dataProvider = useDataProvider()
   const dispatch = useDispatch()
   return async (playlistId) => {
+    clearShuffleContext()
     const { data } = await dataProvider.getList('playlistTrack', {
       pagination: { page: 1, perPage: 500 },
       sort: { field: 'id', order: 'ASC' },

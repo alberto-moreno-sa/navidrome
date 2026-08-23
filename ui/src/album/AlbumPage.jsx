@@ -1,6 +1,6 @@
 import React from 'react'
 import { useShowController, useGetList } from 'react-admin'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import Icon from '../common/Icon'
 import NdLove from '../common/NdLove'
@@ -29,6 +29,8 @@ const fmtTotal = (s) => {
 const AlbumPage = (props) => {
   const { record } = useShowController(props)
   const dispatch = useDispatch()
+  const currentTrack = useSelector((s) => s.player?.current || {})
+  const playingId = currentTrack.trackId || currentTrack.song?.id
   const playAlbum = usePlayAlbum()
   const playSong = usePlaySong()
 
@@ -101,10 +103,14 @@ const AlbumPage = (props) => {
       </div>
 
       <div className="nd-tracks">
-        {songs.map((s, i) => (
-          <div className="nd-track" key={s.id}>
+        {songs.map((s, i) => {
+          const isPlaying = playingId && (s.id === playingId || s.mediaFileId === playingId)
+          return (
+          <div className={`nd-track${isPlaying ? ' playing' : ''}`} key={s.id}>
             <button className="nd-track-main" onClick={() => playSong(s, songs)} type="button">
-              <span className="n">{s.trackNumber || i + 1}</span>
+              <span className="n">
+                {isPlaying ? <Icon name="graphicEq" size={16} /> : s.trackNumber || i + 1}
+              </span>
               <span className="lines">
                 <span className="t nd-trunc">{s.title}</span>
                 {isComp ? <span className="a nd-trunc">{s.artist}</span> : null}
@@ -117,7 +123,8 @@ const AlbumPage = (props) => {
               <span className="dur">{fmtDur(s.duration)}</span>
             </span>
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

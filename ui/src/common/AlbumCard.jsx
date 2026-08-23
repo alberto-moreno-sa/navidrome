@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import Icon from './Icon'
 import NdLove from './NdLove'
 import { coverUrl } from './covers'
@@ -6,10 +7,10 @@ import { useAlbumResolution } from './useAlbumResolution'
 import { usePlayAlbum } from './usePlayAlbum'
 import { usePlayPlaylist } from './usePlay'
 
-// Dense/featured album card. Clicking the card plays the item; the scrim/play
-// overlay is the affordance. A favorite heart overlays the top-right of the
-// artwork on hover (kept as a sibling of the play button to avoid nesting
-// interactive elements). The resolution chip sits in the meta row.
+// Dense/featured album card. Clicking the card opens the detail page; a play
+// button overlays the artwork on hover for direct play (kept as a sibling of
+// the cover link to avoid nesting interactive elements). A favorite heart
+// overlays the top-right. The resolution/format chips sit in the meta row.
 const AlbumCard = ({ record, flag, ghostFlag, lg, tag, resource = 'album', awards }) => {
   const playAlbum = usePlayAlbum()
   const playPlaylist = usePlayPlaylist()
@@ -19,33 +20,37 @@ const AlbumCard = ({ record, flag, ghostFlag, lg, tag, resource = 'album', award
   const cover = coverUrl(record, lg ? 400 : 300)
   const title = record.name || record.title || '—'
   const subtitle = record.albumArtist || record.artist || ''
+  const detailUrl =
+    resource === 'playlist' ? `/playlist/${record.id}/show` : `/album/${record.id}/show`
+
+  const onPlay = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    play(record.id)
+  }
 
   return (
     <div className={`nd-cardwrap${lg ? ' lg' : ''}`}>
-      <button
-        className={`nd-card${lg ? ' lg' : ''}`}
-        onClick={() => play(record.id)}
-        aria-label={`Play ${title}`}
-        type="button"
-      >
+      <div className={`nd-card${lg ? ' lg' : ''}`}>
         <div className="nd-art">
           {cover ? <img src={cover} alt="" loading="lazy" /> : null}
           {flag ? <span className="nd-flag">{flag}</span> : null}
           {ghostFlag ? <span className="nd-flag ghost">{ghostFlag}</span> : null}
-          <div className="nd-scrim">
-            <span className="nd-play">
+          <Link className="nd-artlink" to={detailUrl} aria-label={title} />
+          <div className="nd-scrim" aria-hidden="true">
+            <button className="nd-play" onClick={onPlay} aria-label={`Play ${title}`} type="button">
               <Icon name="play" size={16} />
-            </span>
+            </button>
           </div>
         </div>
         <div className="nd-meta">
-          <div className="lines">
+          <Link className="lines nd-metalink" to={detailUrl}>
             <div className="t nd-trunc">{title}</div>
             <div className={`s nd-trunc${tag ? ' tag' : ''}`}>
               {record.explicit ? <span className="nd-exp">E</span> : null}
               {tag || subtitle}
             </div>
-          </div>
+          </Link>
           {format || res ? (
             <span className="nd-qualchips">
               {format ? (
@@ -68,7 +73,7 @@ const AlbumCard = ({ record, flag, ghostFlag, lg, tag, resource = 'album', award
             ) : null}
           </div>
         ) : null}
-      </button>
+      </div>
       {resource ? <NdLove className="nd-cardfav" resource={resource} record={record} size={18} /> : null}
     </div>
   )

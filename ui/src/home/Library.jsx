@@ -9,6 +9,7 @@ import NdSelect from '../common/NdSelect'
 import LibrarySidebar from '../common/LibrarySidebar'
 import { SkeletonRail, SkeletonList } from '../common/Skeleton'
 import { useInfiniteList } from '../common/useInfiniteList'
+import { setShuffleContext } from '../common/shuffleContext'
 import { coverUrl } from '../common/covers'
 import { usePlayAlbum } from '../common/usePlayAlbum'
 import { usePlaySong } from '../common/usePlaySong'
@@ -311,17 +312,23 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
   // Play/shuffle across the WHOLE library (respecting the active filters), not
   // just the loaded page. Shuffle asks the server for a random-sorted batch, so
   // the queue is random across all songs; Play all uses the current sort.
-  const LIBRARY_BATCH = 100
+  // Shuffle queues a batch and keeps appending random songs as playback nears
+  // the end (endless shuffle across the whole filtered library — see
+  // shuffleContext / Player.jsx), so we never freeze the UI building an ~11k
+  // queue at once. Play all queues a bounded batch in the current sort.
   const playFromLibrary = async (randomize) => {
     if (busy) return
     setBusy(randomize ? 'shuffle' : 'play')
     try {
       const { data } = await dataProvider.getList('song', {
-        pagination: { page: 1, perPage: LIBRARY_BATCH },
+        pagination: { page: 1, perPage: randomize ? 200 : 300 },
         sort: randomize ? { field: 'random', order: 'ASC' } : activeSort,
         filter,
       })
-      if (data && data.length) playSong(data[0], data)
+      if (data && data.length) {
+        playSong(data[0], data) // clears any prior shuffle context
+        if (randomize) setShuffleContext(filter)
+      }
     } catch (e) {
       // ignore — a failed fetch just leaves the queue untouched
     } finally {

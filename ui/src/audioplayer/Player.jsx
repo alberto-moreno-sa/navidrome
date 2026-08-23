@@ -21,6 +21,7 @@ import {
   clearQueue,
   currentPlaying,
   refreshQueue,
+  addTracks,
   setPlayMode,
   setTranscodingProfile,
   setVolume,
@@ -36,6 +37,7 @@ import keyHandlers from './keyHandlers'
 import { calculateGain } from '../utils/calculateReplayGain'
 import { detectBrowserProfile, decisionService } from '../transcode'
 import { getStreamQuality, applyQualityToProfile } from '../common/streamQuality'
+import { getShuffleContext } from '../common/shuffleContext'
 
 const Player = () => {
   const theme = useCurrentTheme()
@@ -126,6 +128,43 @@ const Player = () => {
       decisionService.prefetchDecisions(nextSongIds)
     }
   }, [playerState.queue, playerState.savedPlayIndex])
+
+  // Endless shuffle: when the queue was started by a library shuffle and
+  // playback nears the end, append another random batch (same filter). This
+  // shuffles the whole library without ever building an ~11k queue at once.
+  const appendingRef = useRef(false)
+  useEffect(() => {
+    const ctx = getShuffleContext()
+    if (!ctx.active || appendingRef.current) return
+    const queue = playerState.queue || []
+    const current = playerState.current || {}
+    const idx = queue.findIndex((t) => t.uuid === current.uuid)
+    const remaining = idx >= 0 ? queue.length - idx - 1 : queue.length
+    if (remaining >= 25 || queue.length >= 3000) return
+    appendingRef.current = true
+    dataProvider
+      .getList('song', {
+        pagination: { page: 1, perPage: 150 },
+        sort: { field: 'random', order: 'ASC' },
+        filter: ctx.filter || {},
+      })
+      .then(({ data }) => {
+        const existing = new Set(queue.map((t) => t.trackId))
+        const fresh = (data || []).filter((s) => !existing.has(s.id))
+        if (!fresh.length) return
+        const keyed = {}
+        const ids = []
+        fresh.forEach((s) => {
+          keyed[s.id] = s
+          ids.push(s.id)
+        })
+        dispatch(addTracks(keyed, ids))
+      })
+      .catch(() => {})
+      .finally(() => {
+        appendingRef.current = false
+      })
+  }, [playerState.current, playerState.queue, dataProvider, dispatch])
 
   const visible = authenticated && playerState.queue.length > 0
   const isRadio = playerState.current?.isRadio || false
