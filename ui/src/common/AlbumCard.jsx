@@ -14,7 +14,7 @@ const AlbumCard = ({ record, flag, ghostFlag, lg, tag, resource = 'album', award
   const playAlbum = usePlayAlbum()
   const playPlaylist = usePlayPlaylist()
   const play = resource === 'playlist' ? playPlaylist : playAlbum
-  const res = useAlbumResolution(record, resource === 'album')
+  const { res, format, lossless } = useAlbumResolution(record, resource === 'album')
   if (!record) return null
   const cover = coverUrl(record, lg ? 400 : 300)
   const title = record.name || record.title || '—'
@@ -25,7 +25,7 @@ const AlbumCard = ({ record, flag, ghostFlag, lg, tag, resource = 'album', award
       <button
         className={`nd-card${lg ? ' lg' : ''}`}
         onClick={() => play(record.id)}
-        aria-label={`Reproducir ${title}`}
+        aria-label={`Play ${title}`}
         type="button"
       >
         <div className="nd-art">
@@ -46,7 +46,14 @@ const AlbumCard = ({ record, flag, ghostFlag, lg, tag, resource = 'album', award
               {tag || subtitle}
             </div>
           </div>
-          {res ? <span className="nd-res">{res}</span> : null}
+          {format || res ? (
+            <span className="nd-qualchips">
+              {format ? (
+                <span className={`nd-fmt-chip sm${lossless ? ' lossless' : ''}`}>{format}</span>
+              ) : null}
+              {res ? <span className="nd-res">{res}</span> : null}
+            </span>
+          ) : null}
         </div>
         {awards && awards.length ? (
           <div className="nd-awards">
