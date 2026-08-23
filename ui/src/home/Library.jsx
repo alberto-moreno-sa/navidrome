@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useGetList } from 'react-admin'
+import { useGetList, useDataProvider } from 'react-admin'
 import { Link } from 'react-router-dom'
 import Icon from '../common/Icon'
 import Rail from '../common/Rail'
@@ -112,6 +112,7 @@ const InfiniteFooter = ({ hasMore, loading, loaded, total, onLoadMore }) => {
 const LibraryView = ({ view, layout, search, sortField, order, genreId, quick }) => {
   const play = usePlayAlbum()
   const playSong = usePlaySong()
+  const dataProvider = useDataProvider()
   const playGenre = usePlayGenre()
   const playRadio = usePlayRadio()
   const playPlaylist = usePlayPlaylist()
@@ -306,14 +307,34 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
     )
   }
 
+  // Play/shuffle across the WHOLE library (respecting the active filters), not
+  // just the loaded page. Shuffle asks the server for a random-sorted batch, so
+  // the queue is random across all songs; Play all uses the current sort.
+  const LIBRARY_BATCH = 250
+  const playFromLibrary = async (randomize) => {
+    try {
+      const { data } = await dataProvider.getList('song', {
+        pagination: { page: 1, perPage: LIBRARY_BATCH },
+        sort: randomize ? { field: 'random', order: 'ASC' } : activeSort,
+        filter,
+      })
+      if (data && data.length) playSong(data[0], data)
+    } catch (e) {
+      // ignore — a failed fetch just leaves the queue untouched
+    }
+  }
+
   return (
     <>
       {q.resource === 'song' && records.length ? (
         <div className="nd-viewactions">
-          <button className="nd-btn" onClick={() => playSong(records[0], records)} type="button">
+          <button className="nd-btn" onClick={() => playFromLibrary(false)} type="button">
             <Icon name="play" size={18} /> Play all
           </button>
-          <span className="nd-viewcount">{records.length} loaded</span>
+          <button className="nd-btn text" onClick={() => playFromLibrary(true)} type="button">
+            <Icon name="shuffle" size={18} /> Shuffle
+          </button>
+          <span className="nd-viewcount">{(total || 0).toLocaleString('en')} songs</span>
         </div>
       ) : null}
       {content}
