@@ -46,6 +46,14 @@ const AlbumPage = (props) => {
   const albumArtist = record.albumArtist || record.artist
   const isComp = songs.some((s) => s.artist && s.artist !== albumArtist)
 
+  // Source format(s) of the album, read from the tracks' file suffix.
+  const LOSSLESS = ['FLAC', 'ALAC', 'WAV', 'AIFF', 'APE', 'WV', 'DSF', 'DSD']
+  const codecOf = (s) => (s.suffix || '').toUpperCase()
+  const albumFormats = [...new Set(songs.map(codecOf).filter(Boolean))]
+  const albumFmt = albumFormats.length === 1 ? albumFormats[0] : albumFormats.length > 1 ? 'Mixed' : null
+  const albumRes = songs.length ? resolution(songs[0]) : null
+  const lossless = albumFormats.length > 0 && albumFormats.every((f) => LOSSLESS.includes(f))
+
   const shuffleAll = () => {
     if (!songs.length) return
     const keyed = {}
@@ -72,6 +80,13 @@ const AlbumPage = (props) => {
             {` · ${record.songCount || songs.length} songs`}
             {record.duration ? ` · ${fmtTotal(record.duration)}` : ''}
           </div>
+          {albumFmt ? (
+            <div className="nd-album-fmt">
+              <span className={`nd-fmt-chip${lossless ? ' lossless' : ''}`}>{albumFmt}</span>
+              {albumRes ? <span className="nd-res">{albumRes}</span> : null}
+              <span className="nd-fmt-tag">{lossless ? 'Lossless' : 'Lossy'}</span>
+            </div>
+          ) : null}
           <div className="nd-album-actions">
             <button className="nd-btn" onClick={() => playAlbum(record.id)} type="button" disabled={!songs.length}>
               <Icon name="play" size={18} /> Play
@@ -96,6 +111,7 @@ const AlbumPage = (props) => {
               </span>
             </button>
             <span className="acts">
+              {s.suffix ? <span className="nd-fmt-chip sm">{codecOf(s)}</span> : null}
               {resolution(s) ? <span className="nd-res">{resolution(s)}</span> : null}
               <NdLove resource="song" record={s} size={16} />
               <span className="dur">{fmtDur(s.duration)}</span>

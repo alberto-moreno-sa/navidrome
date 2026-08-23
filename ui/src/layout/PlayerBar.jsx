@@ -8,6 +8,8 @@ import { useAudioState } from '../common/useAudioState'
 import { useScrub } from '../common/useScrub'
 import { usePlayMode } from '../common/usePlayMode'
 import { usePlaybackQuality } from '../common/usePlaybackQuality'
+import { useStreamQuality } from '../common/useStreamQuality'
+import { QUALITY_OPTIONS } from '../common/streamQuality'
 
 const fmt = (s) => {
   if (!s || Number.isNaN(s)) return '00:00'
@@ -68,6 +70,7 @@ const PlayerBar = ({ onToggleQueue }) => {
     current.trackId || current.song?.mediaFileId || current.song?.id,
     current.song,
   )
+  const [streamQuality, setStreamQuality] = useStreamQuality()
 
   if (queueLen === 0) return <div className="nd-player" aria-hidden="true" />
 
@@ -217,6 +220,26 @@ const PlayerBar = ({ onToggleQueue }) => {
                         ? `Transcoded${quality.sourceFormat ? ` from ${quality.sourceFormat}` : ''}${quality.reason ? ` — ${quality.reason}` : ''}.`
                         : 'Original file — bit-perfect, no transcoding.'}
                     </div>
+                    <div className="nd-ppop-sec">Streaming quality</div>
+                    <div className="nd-ppop-opts">
+                      {QUALITY_OPTIONS.map((o) => (
+                        <button
+                          key={o.value}
+                          className={`nd-ppop-item${streamQuality === o.value ? ' on' : ''}`}
+                          role="menuitemradio"
+                          aria-checked={streamQuality === o.value}
+                          onClick={() => setStreamQuality(o.value)}
+                          type="button"
+                        >
+                          <span className="nd-ppop-check">
+                            {streamQuality === o.value ? <Icon name="check" size={15} /> : null}
+                          </span>
+                          <span className="lbl">{o.label}</span>
+                          <span className="hint">{o.hint}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="nd-ppop-note">Applies from the next track.</div>
                   </div>
                 ) : null}
               </div>

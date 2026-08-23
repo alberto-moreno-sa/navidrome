@@ -35,6 +35,7 @@ import { keyMap } from '../hotkeys'
 import keyHandlers from './keyHandlers'
 import { calculateGain } from '../utils/calculateReplayGain'
 import { detectBrowserProfile, decisionService } from '../transcode'
+import { getStreamQuality, applyQualityToProfile } from '../common/streamQuality'
 
 const Player = () => {
   const theme = useCurrentTheme()
@@ -80,7 +81,7 @@ const Player = () => {
   // Detect browser codec profile and eagerly resolve transcode URLs for the
   // persisted queue once on mount (e.g. after a browser refresh)
   useEffect(() => {
-    const profile = detectBrowserProfile()
+    const profile = applyQualityToProfile(detectBrowserProfile(), getStreamQuality())
     decisionService.setProfile(profile)
     dispatch(setTranscodingProfile(profile))
 
