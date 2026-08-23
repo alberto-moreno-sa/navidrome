@@ -7,6 +7,7 @@ import PlayerExpanded from './PlayerExpanded'
 import { useAudioState } from '../common/useAudioState'
 import { useScrub } from '../common/useScrub'
 import { usePlayMode } from '../common/usePlayMode'
+import { usePlaybackQuality } from '../common/usePlaybackQuality'
 
 const fmt = (s) => {
   if (!s || Number.isNaN(s)) return '00:00'
@@ -63,6 +64,10 @@ const PlayerBar = ({ onToggleQueue }) => {
     const au = audioEl()
     if (au && au.duration) au.currentTime = f * au.duration
   })
+  const quality = usePlaybackQuality(
+    current.trackId || current.song?.mediaFileId || current.song?.id,
+    current.song,
+  )
 
   if (queueLen === 0) return <div className="nd-player" aria-hidden="true" />
 
@@ -101,13 +106,10 @@ const PlayerBar = ({ onToggleQueue }) => {
     if (path) history.push(path)
   }
 
-  // Transcoding is on when the played suffix differs from the source suffix.
-  const codec = (song.suffix || '').toUpperCase()
-  const khz = song.sampleRate ? `${Math.round((song.sampleRate / 1000) * 10) / 10} kHz` : null
-  const bits = song.bitDepth ? `${song.bitDepth} bit` : null
-  const kbps = song.bitRate ? `${song.bitRate} kbps` : null
-  const channels = song.channels === 1 ? 'Mono' : song.channels === 2 ? 'Stereo' : song.channels ? `${song.channels} channels` : null
-  const qualityLabel = [bits, khz].filter(Boolean).join(' · ') || codec || null
+  // The chip shows the actual playback format; amber flags a transcode.
+  const chipLabel = quality.transcoded
+    ? [quality.playFormat, quality.playDetail].filter(Boolean).join(' ')
+    : quality.playFormat
 
   return (
     <>
@@ -184,29 +186,37 @@ const PlayerBar = ({ onToggleQueue }) => {
               </div>
             </div>
 
-            {qualityLabel ? (
+            {chipLabel ? (
               <div className="nd-pmenu-anchor">
                 <button
-                  className={`nd-pqual${menu === 'quality' ? ' on' : ''}`}
+                  className={`nd-pqual${menu === 'quality' ? ' on' : ''}${quality.transcoded ? ' transcoded' : ''}`}
                   onClick={() => setMenu(menu === 'quality' ? null : 'quality')}
                   aria-haspopup="menu"
                   aria-expanded={menu === 'quality'}
-                  aria-label="Audio quality"
+                  aria-label={quality.transcoded ? 'Audio quality (transcoded)' : 'Audio quality (original)'}
                   type="button"
                 >
-                  <span className="nd-res">{qualityLabel}</span>
+                  {quality.transcoded ? <Icon name="graphicEq" size={13} /> : null}
+                  <span className="nd-res">{chipLabel}</span>
                 </button>
                 {menu === 'quality' ? (
                   <div className="nd-ppop" role="menu">
                     <div className="nd-ppop-title">Audio quality</div>
                     <dl className="nd-ppop-kv">
-                      {codec ? (<><dt>Format</dt><dd>{codec}</dd></>) : null}
-                      {kbps ? (<><dt>Bit rate</dt><dd>{kbps}</dd></>) : null}
-                      {khz ? (<><dt>Sample rate</dt><dd>{khz}</dd></>) : null}
-                      {bits ? (<><dt>Bit depth</dt><dd>{bits}</dd></>) : null}
-                      {channels ? (<><dt>Channels</dt><dd>{channels}</dd></>) : null}
+                      <dt>Playing</dt>
+                      <dd>{[quality.playFormat, quality.playDetail].filter(Boolean).join(' · ') || '—'}</dd>
+                      {quality.transcoded ? (
+                        <>
+                          <dt>Source</dt>
+                          <dd>{[quality.sourceFormat, quality.sourceDetail].filter(Boolean).join(' · ') || '—'}</dd>
+                        </>
+                      ) : null}
                     </dl>
-                    <div className="nd-ppop-note">Playing from source, no transcoding.</div>
+                    <div className={`nd-ppop-note${quality.transcoded ? ' warn' : ''}`}>
+                      {quality.transcoded
+                        ? `Transcoded${quality.sourceFormat ? ` from ${quality.sourceFormat}` : ''}${quality.reason ? ` — ${quality.reason}` : ''}.`
+                        : 'Original file — bit-perfect, no transcoding.'}
+                    </div>
                   </div>
                 ) : null}
               </div>
