@@ -920,3 +920,8 @@ button.nd-qrow:hover { background: var(--surface); }
 
 /* Album-card quality chips: format over resolution, right-aligned */
 .nd-qualchips { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex: none; }
+
+/* Now-playing artist/album links (separate, clickable) */
+.nd-plink { color: inherit; }
+.nd-plink:hover { color: var(--text-primary); text-decoration: underline; }
+.nd-pdot { color: var(--text-muted); }

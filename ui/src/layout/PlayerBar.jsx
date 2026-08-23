@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useHistory } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom'
 import Icon from '../common/Icon'
 import NdLove from '../common/NdLove'
 import PlayerExpanded from './PlayerExpanded'
@@ -76,7 +76,10 @@ const PlayerBar = ({ onToggleQueue }) => {
 
   const song = current.song || {}
   const title = current.name || song.title || '—'
-  const sub = [current.singer || song.artist, song.album].filter(Boolean).join(' — ')
+  const artistName = current.singer || song.artist
+  const artistId = song.artistId || song.albumArtistId
+  const albumName = song.album
+  const albumId = song.albumId
   const posFrac = scrubFrac != null ? scrubFrac : tick.d ? tick.t / tick.d : 0
   const pct = posFrac * 100
   const shownTime = scrubFrac != null ? scrubFrac * tick.d : tick.t
@@ -141,7 +144,25 @@ const PlayerBar = ({ onToggleQueue }) => {
             </button>
             <div className="nd-ptxt">
               <div className="t nd-trunc">{title}</div>
-              <div className="s nd-trunc">{sub}</div>
+              <div className="s nd-trunc">
+                {artistName ? (
+                  artistId && !current.isRadio ? (
+                    <Link className="nd-plink" to={`/artist/${artistId}/show`}>{artistName}</Link>
+                  ) : (
+                    <span>{artistName}</span>
+                  )
+                ) : null}
+                {albumName ? (
+                  <>
+                    <span className="nd-pdot"> · </span>
+                    {albumId && !current.isRadio ? (
+                      <Link className="nd-plink" to={`/album/${albumId}/show`}>{albumName}</Link>
+                    ) : (
+                      <span>{albumName}</span>
+                    )}
+                  </>
+                ) : null}
+              </div>
             </div>
             {song.id && !current.isRadio ? (
               <NdLove resource="song" record={song} size={18} />

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { Link } from 'react-router-dom'
 import Icon from '../common/Icon'
 import NdLove from '../common/NdLove'
 import NdStars from '../common/NdStars'
@@ -54,7 +55,10 @@ const PlayerExpanded = ({ onClose }) => {
 
   const song = current.song || {}
   const title = current.name || song.title || '—'
-  const sub = [current.singer || song.artist, song.album].filter(Boolean).join(' — ')
+  const artistName = current.singer || song.artist
+  const artistId = song.artistId || song.albumArtistId
+  const albumName = song.album
+  const albumId = song.albumId
   const [scrubFrac, onScrubDown] = useScrub((f) => {
     const au = audioEl()
     if (au && au.duration) au.currentTime = f * au.duration
@@ -106,7 +110,25 @@ const PlayerExpanded = ({ onClose }) => {
           <div className="nd-fs-cover">{current.cover ? <img src={current.cover} alt="" /> : null}</div>
           <div className="nd-fs-meta">
             <div className="t nd-trunc">{title}</div>
-            <div className="s nd-trunc">{sub}</div>
+            <div className="s nd-trunc">
+              {artistName ? (
+                artistId && !current.isRadio ? (
+                  <Link className="nd-plink" to={`/artist/${artistId}/show`} onClick={onClose}>{artistName}</Link>
+                ) : (
+                  <span>{artistName}</span>
+                )
+              ) : null}
+              {albumName ? (
+                <>
+                  <span className="nd-pdot"> · </span>
+                  {albumId && !current.isRadio ? (
+                    <Link className="nd-plink" to={`/album/${albumId}/show`} onClick={onClose}>{albumName}</Link>
+                  ) : (
+                    <span>{albumName}</span>
+                  )}
+                </>
+              ) : null}
+            </div>
           </div>
           {song.id && !current.isRadio ? (
             <div className="nd-fs-actions">
