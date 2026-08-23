@@ -946,3 +946,7 @@ button.nd-qrow:hover { background: var(--surface); }
 .nd-fs-qtitle { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .nd-qpos { font-size: 12px; font-weight: 500; color: var(--text-tertiary); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .nd-qactions .nd-qpos { margin-left: auto; }
+
+/* Compact now-playing queue position */
+.nd-pqpos { font-size: 12px; font-weight: 600; color: var(--text-secondary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+@media (max-width: 860px) { .nd-pqpos { display: none; } }

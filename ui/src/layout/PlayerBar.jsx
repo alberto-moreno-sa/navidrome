@@ -10,6 +10,7 @@ import { usePlayMode } from '../common/usePlayMode'
 import { usePlaybackQuality } from '../common/usePlaybackQuality'
 import { useStreamQuality } from '../common/useStreamQuality'
 import { QUALITY_OPTIONS } from '../common/streamQuality'
+import { useQueuePosition } from '../common/useQueuePosition'
 
 const fmt = (s) => {
   if (!s || Number.isNaN(s)) return '00:00'
@@ -71,6 +72,7 @@ const PlayerBar = ({ onToggleQueue }) => {
     current.song,
   )
   const [streamQuality, setStreamQuality] = useStreamQuality()
+  const queuePos = useQueuePosition()
 
   if (queueLen === 0) return <div className="nd-player" aria-hidden="true" />
 
@@ -319,9 +321,9 @@ const PlayerBar = ({ onToggleQueue }) => {
               ) : null}
             </div>
 
+            {queuePos.label ? <span className="nd-pqpos">{queuePos.label}</span> : null}
             <button className="nd-pqueue" aria-label="Play queue" onClick={onToggleQueue} type="button">
               <Icon name="queue" size={18} />
-              {queueLen > 0 ? <span className="nd-pcount">{queueLen}</span> : null}
             </button>
           </div>
         </div>

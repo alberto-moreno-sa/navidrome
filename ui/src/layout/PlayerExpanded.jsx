@@ -7,6 +7,7 @@ import NdStars from '../common/NdStars'
 import { useAudioState } from '../common/useAudioState'
 import { useScrub } from '../common/useScrub'
 import { usePlayMode } from '../common/usePlayMode'
+import { useQueuePosition } from '../common/useQueuePosition'
 import { playTracks } from '../actions'
 
 const fmt = (s) => {
@@ -32,6 +33,7 @@ const PlayerExpanded = ({ onClose }) => {
   const current = playerState?.current || {}
   const queue = playerState?.queue || []
   const { shuffleOn, repeatState, toggleShuffle, cycleRepeat } = usePlayMode()
+  const queuePos = useQueuePosition()
   const currentUuid = current.uuid
   const [tab, setTab] = useState('desc')
   const [autoplay, setAutoplay] = useState(true)
@@ -181,9 +183,7 @@ const PlayerExpanded = ({ onClose }) => {
             <>
               <div className="nd-fs-qtitle">
                 Up next
-                {queue.length ? (
-                  <span className="nd-qpos">{Math.max(currentIndex + 1, 1)} of {queue.length}</span>
-                ) : null}
+                {queuePos.label ? <span className="nd-qpos">{queuePos.label}</span> : null}
               </div>
               <div className="nd-fs-qlist">
                 {queue.map((t, i) => {

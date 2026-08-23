@@ -5,14 +5,14 @@
 // the whole library without ever holding it all at once. A module ref keeps
 // this out of redux; the normal play paths clear it so appends never leak into
 // an album/playlist/single-song queue.
-let ctx = { active: false, filter: null }
+let ctx = { active: false, filter: null, total: 0 }
 
-export const setShuffleContext = (filter) => {
-  ctx = { active: true, filter: filter || {} }
+export const setShuffleContext = (filter, total) => {
+  ctx = { active: true, filter: filter || {}, total: total || 0 }
 }
 
 export const clearShuffleContext = () => {
-  ctx = { active: false, filter: null }
+  ctx = { active: false, filter: null, total: 0 }
 }
 
 export const getShuffleContext = () => ctx

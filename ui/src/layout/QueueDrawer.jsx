@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useDataProvider, useNotify } from 'react-admin'
 import Icon from '../common/Icon'
+import { useQueuePosition } from '../common/useQueuePosition'
 import { clearQueue, syncQueue, playTracks } from '../actions'
 
 const audioEl = () => (typeof document !== 'undefined' ? document.querySelector('audio') : null)
@@ -42,6 +43,7 @@ const QueueDrawer = ({ open }) => {
   const lyricRef = useRef(null)
 
   const currentIndex = queue.findIndex((t) => t.uuid === currentUuid)
+  const queuePos = useQueuePosition()
 
   useEffect(() => {
     if (tab !== 'lyrics' && tab !== 'queue') return undefined
@@ -156,7 +158,7 @@ const QueueDrawer = ({ open }) => {
             <Icon name="close" size={16} />
             Clear
           </button>
-          <span className="nd-qpos">{Math.max(currentIndex + 1, 1)} of {queue.length}</span>
+          <span className="nd-qpos">{queuePos.label}</span>
         </div>
       ) : null}
 

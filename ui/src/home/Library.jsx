@@ -327,7 +327,7 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
       })
       if (data && data.length) {
         playSong(data[0], data) // clears any prior shuffle context
-        if (randomize) setShuffleContext(filter)
+        if (randomize) setShuffleContext(filter, total)
       }
     } catch (e) {
       // ignore — a failed fetch just leaves the queue untouched
