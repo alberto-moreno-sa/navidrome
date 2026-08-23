@@ -925,3 +925,9 @@ button.nd-qrow:hover { background: var(--surface); }
 .nd-plink { color: inherit; }
 .nd-plink:hover { color: var(--text-primary); text-decoration: underline; }
 .nd-pdot { color: var(--text-muted); }
+
+/* Loading spin for library play/shuffle buttons */
+@keyframes nd-spin { to { transform: rotate(360deg); } }
+.nd-spin { animation: nd-spin 0.8s linear infinite; }
+.nd-btn:disabled { opacity: 0.7; cursor: default; }
+@media (prefers-reduced-motion: reduce) { .nd-spin { animation: none; } }

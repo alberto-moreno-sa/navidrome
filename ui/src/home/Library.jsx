@@ -113,6 +113,7 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
   const play = usePlayAlbum()
   const playSong = usePlaySong()
   const dataProvider = useDataProvider()
+  const [busy, setBusy] = useState(null) // 'play' | 'shuffle' | null
   const playGenre = usePlayGenre()
   const playRadio = usePlayRadio()
   const playPlaylist = usePlayPlaylist()
@@ -310,8 +311,10 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
   // Play/shuffle across the WHOLE library (respecting the active filters), not
   // just the loaded page. Shuffle asks the server for a random-sorted batch, so
   // the queue is random across all songs; Play all uses the current sort.
-  const LIBRARY_BATCH = 250
+  const LIBRARY_BATCH = 100
   const playFromLibrary = async (randomize) => {
+    if (busy) return
+    setBusy(randomize ? 'shuffle' : 'play')
     try {
       const { data } = await dataProvider.getList('song', {
         pagination: { page: 1, perPage: LIBRARY_BATCH },
@@ -321,6 +324,8 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
       if (data && data.length) playSong(data[0], data)
     } catch (e) {
       // ignore — a failed fetch just leaves the queue untouched
+    } finally {
+      setBusy(null)
     }
   }
 
@@ -328,11 +333,13 @@ const LibraryView = ({ view, layout, search, sortField, order, genreId, quick })
     <>
       {q.resource === 'song' && records.length ? (
         <div className="nd-viewactions">
-          <button className="nd-btn" onClick={() => playFromLibrary(false)} type="button">
-            <Icon name="play" size={18} /> Play all
+          <button className="nd-btn" onClick={() => playFromLibrary(false)} disabled={!!busy} type="button">
+            <Icon name={busy === 'play' ? 'update' : 'play'} size={18} className={busy === 'play' ? 'nd-spin' : ''} />
+            {busy === 'play' ? ' Loading…' : ' Play all'}
           </button>
-          <button className="nd-btn text" onClick={() => playFromLibrary(true)} type="button">
-            <Icon name="shuffle" size={18} /> Shuffle
+          <button className="nd-btn text" onClick={() => playFromLibrary(true)} disabled={!!busy} type="button">
+            <Icon name={busy === 'shuffle' ? 'update' : 'shuffle'} size={18} className={busy === 'shuffle' ? 'nd-spin' : ''} />
+            {busy === 'shuffle' ? ' Shuffling…' : ' Shuffle'}
           </button>
           <span className="nd-viewcount">{(total || 0).toLocaleString('en')} songs</span>
         </div>
