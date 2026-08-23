@@ -156,6 +156,7 @@ const QueueDrawer = ({ open }) => {
             <Icon name="close" size={16} />
             Clear
           </button>
+          <span className="nd-qpos">{Math.max(currentIndex + 1, 1)} of {queue.length}</span>
         </div>
       ) : null}
 

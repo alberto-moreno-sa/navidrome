@@ -179,7 +179,12 @@ const PlayerExpanded = ({ onClose }) => {
             </>
           ) : (
             <>
-              <div className="nd-fs-qtitle">Up next</div>
+              <div className="nd-fs-qtitle">
+                Up next
+                {queue.length ? (
+                  <span className="nd-qpos">{Math.max(currentIndex + 1, 1)} of {queue.length}</span>
+                ) : null}
+              </div>
               <div className="nd-fs-qlist">
                 {queue.map((t, i) => {
                   const zone = currentIndex < 0 ? '' : i < currentIndex ? ' done' : i === currentIndex ? ' on' : ''
